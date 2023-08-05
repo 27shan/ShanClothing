@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="2500"
+   height="1400"
+   viewBox="252.448 288.608 776.384 434.58531"
+   version="1.1"
+   id="svg11"
+   sodipodi:docname="national-payment-system-mir.svg"
+   inkscape:version="1.1.2 (b8e25be833, 2022-02-05)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs15" />
+  <sodipodi:namedview
+     id="namedview13"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     showgrid="false"
+     inkscape:zoom="0.226"
+     inkscape:cx="1079.646"
+     inkscape:cy="39.823009"
+     inkscape:window-width="1680"
+     inkscape:window-height="987"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg11" />
+  <linearGradient
+     id="a"
+     gradientUnits="userSpaceOnUse"
+     x1="1065.561"
+     y1="-978.52399"
+     x2="1779.66"
+     y2="-978.52399"
+     gradientTransform="matrix(0.32,0,0,0.44204717,459.34,783.46876)">
+    <stop
+       offset=".3"
+       stop-color="#00b4e6"
+       id="stop4" />
+    <stop
+       offset="1"
+       stop-color="#088ccb"
+       id="stop6" />
+  </linearGradient>
+  <g
+     id="g19"
+     transform="translate(5e-4,65.493663)">
+    <path
+       fill="#4db45e"
+       d="m 461.664,288.608 v 0.13262 c -0.096,0 -30.336,-0.13262 -38.4,39.78424 -7.392,36.6015 -28.224,137.60928 -28.8,140.39418 h -5.76 c 0,0 -21.312,-103.26222 -28.8,-140.52679 -8.064,-39.91686 -38.4,-39.78425 -38.4,-39.78425 h -69.056 v 303.59799 h 69.088 V 411.89357 h 5.76 l 40.32,180.31104 h 47.968 l 40.32,-180.17842 h 5.76 v 180.17842 h 69.088 V 288.608 Z m 252.384,0 c 0,0 -20.256,2.51967 -29.76,31.82878 L 635.36,468.91904 H 629.6 V 288.608 h -69.088 v 303.59799 h 65.248 c 0,0 21.216,-2.65228 30.721,-31.8274 l 47.968,-148.48364 h 5.76 v 180.31104 h 69.088 V 288.608 Z m 95.968,137.87451 v 165.72348 h 69.088 v -96.76412 h 74.849 c 32.64,0 60.256,-28.77727 70.528,-68.91516 H 810.016 Z"
+       id="path2"
+       style="stroke-width:1.17533" />
+    <path
+       fill="url(#a)"
+       d="M 953.984,288.608 H 800.32 c 7.68,57.81977 39.071,104.19052 79.647,119.30853 a 110.449,152.57396 0 0 0 28.896,5.30595 h 118.432 c 1.056,-6.89594 1.536,-13.92449 1.536,-21.21827 0,-57.11387 -33.503,-103.39621 -74.847,-103.39621 z"
+       id="path9"
+       style="fill:url(#a);stroke-width:1.17533" />
+  </g>
+</svg>

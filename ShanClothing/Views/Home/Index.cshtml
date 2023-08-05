@@ -1,0 +1,35 @@
+﻿@using System;
+@using ShanClothing.Domain.Entity;
+@using ShanClothing.Domain.Enum;
+@model List<Cloth>;
+
+<div class="path">
+    <img src="/img/home.svg" class="path-home__ico">
+    <a asp-controller="Home" asp-action="Index" class="path__link">
+        ГЛАВНАЯ
+    </a>     
+</div>
+
+<h1>
+    Главная
+</h1>
+
+<div class="ct-product-grid" id="target-products">
+    @foreach (var cloth in Model)
+    {
+        <div class="ct-product">
+            <a href='@Url.Action("GetCloth", "Cloth", new { id = cloth.Id })' class="ct-product__link">
+                <img src="@cloth.ImagesCloth.FirstOrDefault()?.RelativePath" class="ct-product__img">
+                <p class="ct-product-name">@cloth.Name</p>
+                @if (cloth.Discount > 0)
+                {
+                    <p class="ct-product-price">@Math.Round((cloth.Price-cloth.Price*(cloth.Discount/100M)), 2)₽ <span class="ct-product-price-discount">@Math.Round(cloth.Price, 2)₽</span></p>
+                }
+                else
+                {
+                    <p class="ct-product-price">@Math.Round(cloth.Price, 2)₽</p>
+                }
+            </a>
+        </div>
+    }
+</div>

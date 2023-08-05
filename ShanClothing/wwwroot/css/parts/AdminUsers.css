@@ -1,0 +1,99 @@
+.au-user-grid {
+    padding-top: 25px;
+    padding-bottom: 25px;
+}
+
+.au-user-grid div:first-child {
+    border-top: 1px solid rgba(0,0,0,0.12);
+}
+
+.au-user {
+    display: flex;
+    font-size: 18px;
+    height: 75px;
+    border-bottom: 1px solid rgba(0,0,0,0.12);
+}
+
+.au-user__img {
+    height: 100%;
+}
+
+.au-user-info {
+    width: 50%;
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: 15px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.au-user__id {
+    width: 50%;
+    text-transform: uppercase;
+}
+
+.au-user__email {
+    width: 35%;
+}
+
+.au-user__orders {
+    width: 15%;
+    text-transform: uppercase;
+    text-decoration: none;
+
+    font-family: 'Roboto Condensed';
+    font-weight: 700;
+    text-decoration: none;
+    text-transform: uppercase;
+    border-bottom: 2px;
+    color: #727272;
+    text-decoration: underline;
+}
+
+.au-user__orders:hover {
+    text-decoration: none;
+}
+
+.au-user form {
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.au-form-changeRole {
+    display: flex;
+    font-size: 18px;
+    margin-left: 7px;
+}
+
+.au-form-changeRole__select {
+    font-family: 'Roboto Condensed';
+    padding-left: 7px;
+    padding-right: 7px;
+    border: 1px solid rgba(0,0,0,0.24);
+    border-radius: 50px;
+}
+
+.au-form-changeRole button {
+    margin-left: 7px;
+    margin-right: 7px;
+    margin-top: auto;
+    margin-bottom: auto;
+    font-weight: 700;
+    font-family: 'Roboto Condensed';
+    font-size: 16px;
+    color: white;
+    background-color: #282828;
+    padding: 7px 20px 7px 20px;
+    border: none;
+    border-radius: 6px;
+    text-decoration: none;
+}
+
+.au-form-changeRole button:hover {
+    background-color: #424242;
+}
+
+.au-form-changeRole button:active {
+    background-color: #000000;
+}
+

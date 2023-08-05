@@ -1,0 +1,513 @@
+﻿@using ShanClothing.Domain.Entity;
+@using ShanClothing.Domain.Enum;
+@model List<Order>;
+
+<div class="path">
+    <img src="/img/home.svg" class="path-home__ico">
+    <a asp-controller="Home" asp-action="Index" class="path__link">
+        ГЛАВНАЯ
+    </a>
+    <img src="/img/right.svg" class="path-right__ico">
+    <a asp-controller="Account" asp-action="Profile" class="path__link">
+        Админ
+    </a>
+    <img src="/img/right.svg" class="path-right__ico">
+    <a class="path-end__link">
+        Заказы
+    </a>         
+</div>
+
+<div class="ac-menu">
+    <form asp-controller="Admin" asp-action="Orders" class="ac-form-filter" method="get">
+        <select name="statusOrder" id="selectStatusOrder" class="ac-form-filter__select">
+            <option value="@StatusOrder.Paid">Оплаченные</option>
+			<option value="@StatusOrder.Sent">Отправленные</option>
+			<!--<option value="@StatusOrder.Basket">Корзины</option>-->
+        </select>
+        <select name="sortType" id="selectSortType" class="ac-form-filter__select">
+            <option value="@SortType.DateDescending">Сначала новые</option>
+            <option value="@SortType.DateAscending">Сначала старые</option>
+            <option value="@SortType.PriceAscending">По возрастанию цены</option>
+            <option value="@SortType.PriceDescending">По убыванию цены</option>
+        </select>
+        <input type="hidden" name="userId" value="@Guid.Empty">
+        <input type="hidden" name="orderId" value="@Guid.Empty">
+        <button type="submit">Применить</button>
+    </form>
+    <form asp-controller="Admin" asp-action="Orders" class="ao-form-search" method="get">
+        <input type="hidden" name="statusOrder" value="@StatusOrder.Paid">
+        <input type="hidden" name="sortType" value="@SortType.DateDescending">
+        <input type="hidden" name="userId" value="@Guid.Empty">
+        <input type="search" id="searchOrderId" name="orderId" placeholder="№ заказа">
+        <button type="submit">
+            <img src="/img/loupe.svg" class="loupe">
+        </button>
+    </form>
+</div>
+
+<div class="ao-order-container">
+    @if(!Model.Any())
+    {
+        <p class="ac-order-error">Заказы не найденны</p>
+    }
+    else
+    {
+        <div class="ao-order-grid" id = "target-orders">
+            @foreach (var o in Model)
+            {
+                <div class="ao-order">
+                    <img class="ao-order__img" src="@o.OrderClothes.FirstOrDefault()?.Cloth.ImagesCloth.FirstOrDefault()?.RelativePath">
+                    <div class="ao-order-info">
+                        <p class="ao-order__id">@o.Id</p>
+                        @switch (o.Status)
+                        {
+                            case StatusOrder.Basket:
+                                <p class="ao-order__status">Корзина</p>
+                                break;
+                            case StatusOrder.Paid:
+                                <p class="ao-order__status">Оплачен</p>
+                                break;
+                            case StatusOrder.Sent:
+                                <p class="ao-order__status">Отправлен</p>
+                                break;
+                        }
+                        <a href='@Url.Action("Orders", "Admin",
+                            new { sortType = SortType.DateDescending, statusOrder = StatusOrder.Paid, userId = o.AppUserId, orderId = Guid.Empty })' class="ao-order__userId">@o.AppUserId</a>
+                        <p class="ao-order__price">@(o.PriceTotal)₽</p>
+                        <p class="ao-order__time">@o.TimeCreation</p>
+                    </div>
+
+                    <button class="ao-order-edit__button" id="ao-order-info__button" data-order-id="@o.Id">Подробнее</button>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+
+
+
+<div class="popup" id="popup">
+	<div class="popup-container">
+		<div class="popup-header">
+			<div class="popup-header__empty"></div>
+			<p class="popup-headline" id="popup-headline">Заказ</p>
+			<button class="popup-close__btn" id="popup-close__btn">&#10006</button>
+		</div>
+
+		<div class="popup-content">
+            <div class="b-popup-user">
+				<p class="b-popup-user__headline" id="deliveryType">Платежный адрес</p>
+				<p class="b-popup-user__label" id="firstname_label">Имя: <span class="b-popup-user__value" id="firstname"></span></p>
+				<p class="b-popup-user__label" id="lastname_label">Фамилия: <span class="b-popup-user__value" id="lastname"></span></p>
+				<p class="b-popup-user__label" id="email_label">Email: <span class="b-popup-user__value" id="email"></span></p>
+				<p class="b-popup-user__label" id="phone_label">Номер телефона: <span class="b-popup-user__value" id="phone"></span></p>
+				<p class="b-popup-user__label" id="address_label">Адрес: <span class="b-popup-user__value" id="address"></span></p>
+				<p class="b-popup-user__label-end" id="postcode_label">Почтовый индекс: <span class="b-popup-user__value" id="postcode"></span></p>
+			</div>
+            <div class="ao-popup-payment">
+				<div class="ao-popup-paymnet__headline">
+                    <img src="" id="paymentImg">
+                    <p id="paymentName"></p>
+                </div>
+				<p class="b-popup-user__label">Итого: <span class="b-popup-user__value" id="price"></span></p>
+                <p class="b-popup-user__label">Оплачено: <span class="b-popup-user__value" id="amount"></span></p>
+                <p class="b-popup-user__label">Время оплаты: <span class="b-popup-user__value" id="timePayment"></span></p>
+			</div>
+        </div>
+
+        <div class="ao-popup-product-grid" id='product-grid'></div>
+
+        <form asp-controller="Admin" asp-action="SendOrder" class="ao-form-send" id="ao-form-send">
+            <input type="hidden" name="orderId" id="ao-form-send__orderId">
+            <p id="ao-form-send__label"></p>
+            <input type="text" name="tracker" id="ao-form-send__tracker">
+            <button type="submit" id="ao-form-send__button">Отправить</button>
+        </form>
+    </div>
+</div>
+
+
+<script>
+    var popup = document.querySelector('#popup');
+    var popupName = document.querySelector('#popup-headline');
+    var btnPopupClose = document.querySelector('#popup-close__btn');
+
+    popup.classList.add('hidden');
+
+    //Ифнормация о заказе
+    document.querySelectorAll('#ao-order-info__button').forEach(function(button) {
+        button.addEventListener('click', openInfoPopup);
+    });
+    //>>
+
+    //Закрытие popup-окон
+    btnPopupClose.onclick = function() {
+		popup.classList.add('hidden');
+	}
+    //>>
+
+    //<<Сохранение параметров фильтра
+    var urlString = window.location.href;
+
+    var url = new URL(urlString);
+    var searchParams = url.searchParams;
+
+    var statusOrder = searchParams.get('statusOrder');
+    var sortType = searchParams.get('sortType');
+    var orderId = searchParams.get('orderId');
+    var userId = searchParams.get('userId');
+
+    document.addEventListener('DOMContentLoaded', saveFilter)
+    //>>
+
+    //Загрузка заказов
+    var page = 2;
+    var isDownloadable = true;
+
+    if(orderId != '@Guid.Empty' || userId != '@Guid.Empty')
+    {
+        isDownloadable = false;
+    }
+
+    window.addEventListener('scroll', function() {
+        // Получаем текущую позицию прокрутки страницы
+        var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+        // Получаем высоту видимой части окна браузера
+        var windowHeight = window.innerHeight || document.documentElement.clientHeight;
+
+        // Получаем высоту контента страницы
+        var documentHeight = document.documentElement.scrollHeight;
+
+        // Проверяем, находимся ли мы внизу страницы (допустимый зазор 100 пикселей)
+        if ((scrollTop + windowHeight >= documentHeight - 130) && isDownloadable) {
+            // Выполняем действия загрузки товаров
+            loadMoreOrders();
+        }
+    });
+    //>>
+
+    function loadMoreOrders()
+    {
+        isDownloadable = false;
+        var targetOrdersBlock = document.querySelector('#target-orders');
+
+        console.log("Page:" + page);
+        const url = '/Admin/GetOrdersJson?sortType=' + sortType + "&statusOrder=" + statusOrder + "&page=" + page;
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200)
+            {
+                var response = JSON.parse(xhr.responseText);
+                if (response.isFound)
+                {
+                    orders = response.orders.$values;
+                    
+                    for(var i = 0; i < orders.length; i++)
+                    {
+                        var order = orders[i];
+                        var cloth = order.orderClothes.$values[0].cloth;
+
+                        if(cloth.$ref)
+                        {
+                            for(var j = 0; j < orders.length; j++)
+                            {
+                                var o = orders[j];
+
+                                var lol = o.orderClothes.$values.find(item => item.cloth.$id == cloth.$ref);
+
+                                if(lol != undefined)
+                                {
+                                    cloth = lol.cloth;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        //Добавление заказа
+                        var newBlock = document.createElement('div');
+                        newBlock.className = 'ao-order';
+
+                        // Создание элемента img
+                        var img = document.createElement('img');
+                        img.className = 'ao-order__img';
+
+                        // Установка атрибута src
+                        img.setAttribute('src', cloth.imagesCloth.$values[0].relativePath);
+
+                        // Создание элемента div для информации о заказе
+                        var orderInfoDiv = document.createElement('div');
+                        orderInfoDiv.className = 'ao-order-info';
+
+                        // Создание элемента p для отображения ID заказа
+                        var orderIdP = document.createElement('p');
+                        orderIdP.className = 'ao-order__id';
+                        orderIdP.textContent = '№' + order.id;
+
+                        // Добавление элемента p для отображения статуса заказа с использованием switch
+                        var orderStatusP = document.createElement('p');
+                        orderStatusP.className = 'ao-order__status';
+
+                        switch (order.status) {
+                            case 0:
+                                orderStatusP.textContent = 'Корзина';
+                                break;
+                            case 1:
+                                orderStatusP.textContent = 'Оплачен';
+                                break;
+                            case 2:
+                                orderStatusP.textContent = 'Отправлен';
+                                break;
+                        }
+
+                        // Создание элемента a для отображения ссылки на пользователя
+                        var userIdLink = document.createElement('a');
+                        userIdLink.className = 'ao-order__userId';
+                        userIdLink.setAttribute('href', '/Admin/GetOrdersJson?statusOrder=@(StatusOrder.Paid)&sortType=@(SortType.DateDescending)&userId=' + order.appUserId + 'orderId=0');
+                        userIdLink.textContent = order.appUserId;
+
+                        // Создание элемента p для отображения цены заказа
+                        var orderPriceP = document.createElement('p');
+                        orderPriceP.className = 'ao-order__price';
+                        orderPriceP.textContent = order.priceTotal + '₽';
+
+                        // Создание элемента p для отображения времени создания заказа
+                        var orderTimeP = document.createElement('p');
+                        orderTimeP.className = 'ao-order__time';
+                        orderTimeP.textContent = (new Date(order.timeCreation)).toLocaleString('ru-RU');
+
+                        // Создание кнопки для подробной информации о заказе
+                        var orderDetailsBtn = document.createElement('button');
+                        orderDetailsBtn.className = 'ao-order-edit__button';
+                        orderDetailsBtn.id = 'ao-order-info__button';
+                        orderDetailsBtn.setAttribute('data-order-id', order.id);
+                        orderDetailsBtn.textContent = 'Подробнее';
+                        orderDetailsBtn.addEventListener('click', openInfoPopup);
+
+                        // Добавление созданных элементов в блок нового заказа
+                        newBlock.appendChild(img);
+                        newBlock.appendChild(orderInfoDiv);
+                        orderInfoDiv.appendChild(orderIdP);
+                        orderInfoDiv.appendChild(orderStatusP);
+                        orderInfoDiv.appendChild(userIdLink);
+                        orderInfoDiv.appendChild(orderPriceP);
+                        orderInfoDiv.appendChild(orderTimeP);
+                        newBlock.appendChild(orderDetailsBtn);
+
+                        targetOrdersBlock.appendChild(newBlock);
+                    }
+                    
+                    page = page + 1;
+                    isDownloadable = true;
+                }
+                else
+                {
+                    isDownloadable = false;
+                    console.log("Товары не найденны")
+                }
+            }
+            else
+            {
+                isDownloadable = false;
+            }
+        };
+        xhr.send();
+    }
+
+    function openInfoPopup() {
+            var orderId = this.getAttribute('data-order-id');
+            popupName.textContent = orderId;
+
+            const url = '/Admin/GetOrderJson?id=' + orderId;
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var response = JSON.parse(xhr.responseText);
+
+                    if(response.isFound)
+                    {
+                        order = response.order;
+                
+                        //Заполнение адреса
+                        var deliveryType = document.querySelector('#deliveryType');
+                        var firstName = document.querySelector('#firstname_label');
+                        var lastName = document.querySelector('#lastname_label');
+                        var email = document.querySelector('#email_label');
+                        var phoneNumber = document.querySelector('#phone_label');
+                        var address = document.querySelector('#address_label');
+                        var postcode = document.querySelector('#postcode_label');
+                        
+                        if(order.deliveryType == 0)
+                        {
+                            deliveryType.textContent = "Самовывоз";
+                            document.querySelector('#email').textContent = order.email;
+
+                            firstName.classList.add('hidden');
+                            lastName.classList.add('hidden');
+                            phoneNumber.classList.add('hidden');
+                            address.classList.add('hidden');
+                            postcode.classList.add('hidden');
+                        }
+                        else if(order.deliveryType == 1)
+                        {
+                            deliveryType.textContent = "Доставка почтой";
+
+                            firstName.classList.remove('hidden');
+                            lastName.classList.remove('hidden');
+                            phoneNumber.classList.remove('hidden');
+                            address.classList.remove('hidden');
+                            postcode.classList.remove('hidden');
+
+                            document.querySelector('#firstname').textContent = order.firstName;
+                            document.querySelector('#lastname').textContent = order.lastName;
+                            document.querySelector('#email').textContent = order.email;
+                            document.querySelector('#phone').textContent = order.phoneNumber;
+                            document.querySelector('#address').textContent = order.address;
+                            document.querySelector('#postcode').textContent = order.postcode;
+                        }
+
+                        //Заполнение информации о платеже
+                        payments = Object.values(order.payments)[1];
+
+                        for(var i = 0; i < payments.length; i++)
+                        {
+                            var payment = payments[i];
+
+                            if(payment.timePayment != null)
+                            {
+                                if(payment.paymentType == 0)
+                                {
+                                    document.querySelector('#paymentImg').src = '/img/card.svg'
+                                    document.querySelector('#paymentName').textContent = 'Карта';
+                                    document.querySelector('#paymentName').classList.remove('eth');
+                                    document.querySelector('#paymentName').classList.add('card');
+
+                                    document.querySelector('#price').textContent = order.priceTotal + '₽';
+                                    document.querySelector('#amount').textContent = payments[i].amount + '₽';
+                                    document.querySelector('#timePayment').textContent = payments[i].timePayment;
+                                }
+                                else if(payment.paymentType == 1)
+                                {
+                                    document.querySelector('#paymentImg').src = '/img/ethereum.svg';
+                                    document.querySelector('#paymentName').textContent = 'Ethereum';
+                                    document.querySelector('#paymentName').classList.remove('card');
+                                    document.querySelector('#paymentName').classList.add('eth');
+
+                                    document.querySelector('#price').textContent = order.priceTotal + '₽';
+                                    document.querySelector('#amount').textContent = payments[i].amountWei + ' WEI';
+                                    document.querySelector('#timePayment').textContent = payments[i].timePayment;
+                                }
+                            }
+                        }
+
+                        //Очистка товаров в заказе
+                        var targetElement = document.querySelector('#product-grid');
+                        while (targetElement.firstChild) {
+                            targetElement.removeChild(targetElement.firstChild);
+                        }
+
+                        //Добавление товаров заказа
+                        orderClothes = Object.values(order.orderClothes)[1];
+
+                        for(var i = 0; i < orderClothes.length; i++)
+                        {
+                            var orderCloth = orderClothes[i];
+                            var cloth = orderCloth.cloth;
+
+                            if (cloth.$ref)
+                            {
+                                cloth = orderClothes.find(item => item.cloth.$id == orderCloth.cloth.$ref).cloth;
+                            }
+
+                            // Создаем новый блок HTML
+                            var newBlock = document.createElement('div');
+                            newBlock.className = 'ao-product';
+
+                            //Создаем ссылку на товар
+                            var link = document.createElement('a');
+                            link.href = '/Cloth/GetCloth?id=' + cloth.id;
+                            link.className = "ao-product__link";
+
+                            //Создаем изображение товара
+                            var image = document.createElement('img');
+                            image.src = (Object.values(cloth.imagesCloth)[1])[0].relativePath;
+                            image.className = "ao-product__img";
+
+                            //Создаем название товара
+                            var name = document.createElement('p');
+                            name.textContent = cloth.name;
+                            name.className = "ao-product__name";
+
+                            //Создаем информацию о товарк
+                            var info = document.createElement('p');
+                            info.textContent = "Размер: " + orderCloth.size + "; Количество: " + orderCloth.number;
+                            info.className = "ao-product__info";
+
+                            //Добавляем элементы  новый ссылку
+                            link.appendChild(image);
+                            link.appendChild(name);
+                            link.appendChild(info);
+
+                            //Добавляем ссылку в блок
+                            newBlock.appendChild(link);
+
+                            // Вставляем новый блок в целевой элемент
+                            targetElement.appendChild(newBlock);
+                        }
+
+
+                        //Форма для отправки трекера или информировании о готовности к получению
+                        document.querySelector('#ao-form-send__orderId').value = orderId;
+                        if(order.deliveryType == 0)
+                        {
+                            document.querySelector('#ao-form-send').classList.remove('hidden');
+                            document.querySelector('#ao-form-send__tracker').value = '0';
+                            document.querySelector('#ao-form-send__tracker').classList.add('hidden');
+                            document.querySelector('#ao-form-send__label').classList.add('hidden');
+                            document.querySelector('#ao-form-send__button').textContent = "Готово к получению";
+                        }
+                        else if(order.deliveryType == 1)
+                        {
+                            document.querySelector('#ao-form-send').classList.remove('hidden');
+                            document.querySelector('#ao-form-send__tracker').classList.remove('hidden');
+                            document.querySelector('#ao-form-send__label').classList.remove('hidden');
+                            document.querySelector('#ao-form-send__label').textContent = "Трек-номер для отслеживания заказа: ";
+                            document.querySelector('#ao-form-send__button').textContent = "Отправить";
+                        }
+                        if(order.status != 1)
+                        {
+                            document.querySelector('#ao-form-send').classList.add('hidden');
+                        }
+                    }
+                    else
+                    {
+                        console.log("Ошибка")
+                    }
+                }
+            };
+            xhr.send();
+
+            popup.classList.remove('hidden');
+        }
+
+    function saveFilter() 
+    {
+        var selectStatusOrder = document.querySelector('#selectStatusOrder');
+        var selectSortType = document.querySelector('#selectSortType');
+        var searchOrderId = document.querySelector('#searchOrderId');
+
+        selectStatusOrder.value = statusOrder;
+        selectSortType.value = sortType;
+
+        if(orderId != '@Guid.Empty')
+        {
+            searchOrderId.value = orderId;
+        }
+    }
+</script>

@@ -1,0 +1,67 @@
+﻿@using ShanClothing.Domain.Entity;
+@model Payment;
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="~/css/parts/Login.css"/>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Roboto+Condensed:wght@400;700&family=Roboto+Slab:wght@400;500;700&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="main">
+        <div class="container">
+            <h1 class="logo">
+                SHAN CLOTHING
+            </h1>
+
+            <h2 class="logo-card">
+				<img src="/img/card.svg" class="logo-eth__img">
+                Оплата картой
+            </h2>
+
+            <div class="form">
+				<div class="form__line">
+                    <div class="form__group">
+                        <p class="form__amount">
+                            @(Model.Amount)₽
+                        </p>
+                    </div>
+                </div>
+
+				<div class="form__line">
+                    <div class="form__group">
+                        <p class="form__message">
+                            Здесь должна быть оплата картой. Нажмите кнопку "Оплатить" и мы сделаем вид, что оплата была произведена.
+                            Также вы можете оплатить заказ в тестовой сети Ethereum Sepolia.
+                        </p>
+                    </div>
+                </div>
+
+
+                <div class="form__keys">
+                    <a asp-controller="Home" asp-action="Index" class="form__link">Назад</a>
+                    <button id="p-pay__btn" class="form__btn">Оплатить</button>
+                </div>
+
+            </div>  
+        </div>
+    </div>
+</body>
+</html>
+
+<script>
+    const btnPay = document.querySelector('#p-pay__btn');
+    btnPay.onclick = function() {
+        window.location.href = '@Model.ReturnUrl';
+    };
+</script>

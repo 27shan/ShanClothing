@@ -1,0 +1,786 @@
+﻿@using ShanClothing.Domain.Entity;
+@using ShanClothing.Domain.ViewModels;
+@using ShanClothing.Domain.Enum;
+@model AdminClothesViewModel;
+
+<div class="path">
+    <img src="/img/home.svg" class="path-home__ico">
+    <a asp-controller="Home" asp-action="Index" class="path__link">
+        ГЛАВНАЯ
+    </a>
+    <img src="/img/right.svg" class="path-right__ico">
+    <a asp-controller="Account" asp-action="Profile" class="path__link">
+        Админ
+    </a>
+    <img src="/img/right.svg" class="path-right__ico">
+    <a class="path-end__link">
+        ТОВАРЫ
+    </a>         
+</div>
+
+<div class="ac-menu">
+    <form asp-controller="Admin" asp-action="Clothes" class="ac-form-filter" method="get">
+        <select name="typeId" id="selectTypeId" class="ac-form-filter__select">
+            <option value="0">Все</option>
+            @foreach (var t in Model.TypesClothes)
+            {
+                <option value="@t.Id">@t.Name</option>
+            }
+        </select>
+        <select name="sortType" id="selectSortType" class="ac-form-filter__select">
+            <option value="@SortType.DateDescending">Сначала новые</option>
+            <option value="@SortType.DateAscending">Сначала старые</option>
+            <option value="@SortType.PopularDescending">Сначала популярные</option>
+            <option value="@SortType.PopularAscending">Сначала менее популярные</option>
+            <option value="@SortType.PriceAscending">По возрастанию цены</option>
+            <option value="@SortType.PriceDescending">По убыванию цены</option>
+            <option value="@SortType.DiscountAscending">По возрастанию скидки</option>
+            <option value="@SortType.DiscountDescending">По убыванию скидки</option>
+        </select>
+        <div class="ac-form-filter__group">
+            <input type="hidden" name="showHidden" value="true" id="showHiddenInput">
+            <input type="checkbox" id="showHiddenCheckbox">
+            <p>Показать скрытые</p>
+        </div>
+        <input type="hidden" name="name" value="0">
+        <button type="submit">Применить</button>
+    </form>
+    <form asp-controller="Admin" asp-action="Clothes" class="ao-form-search" method="get">
+        <input type="hidden" name="typeId" value="0">
+        <input type="hidden" name="sortType" value="@SortType.DateDescending">
+        <input type="hidden" name="showHidden" value="true">
+        <input type="search" name="name" id="searchName" placeholder="Название товара">
+        <button type="submit">
+            <img src="/img/loupe.svg" class="loupe">
+        </button>
+    </form>
+    <div class="ac-menu-btns">
+        <button id="createButton">Добавить товар</button>
+        <button id="createTypeButton">Создать категорию</button>
+    </div>
+</div>
+
+<div class="ac-product-container">
+    @if(!Model.TypesClothes.Any())
+    {
+        <p class="ac-order-error">Категории не найденны</p>
+    }
+    else if(!Model.Clothes.Any())
+    {
+        <p class="ac-order-error">Товары не найденны</p>
+    }
+    else
+    {
+        <div class="ac-product-grid" id = "target-product">
+            @foreach(var c in Model.Clothes)
+            {
+                <div class="ac-product">
+                    <img class="ac-product__img" src="@c.ImagesCloth.FirstOrDefault()?.RelativePath">
+                    <div class="ac-product-info">
+                        <a href='@Url.Action("GetCloth", "Cloth", new { id = c.Id })' class="ac-product__name">@c.Name</a>
+                        <p class="ac-product__price">@(c.Price)₽</p>
+                        <div class="ac-product__sold">
+                            <p>Продано: @c.NumberSold <img class="ac-product__sold-img" src="/img/info.svg" alt=""></p>
+                            <div class="ac-product__sold-price">
+                                <p>@c.PriceSold₽</p>
+                            </div>
+                        </div>
+                        <p class="ac-product__time">@c.TimeCreation</p>
+                    </div>
+
+                    <form asp-controller="Admin" asp-action="MinorEditCloth" class="ac-form-minorEdit" id="ac-form-minorEdit" method="post">
+                        <input type="hidden" name="Id" value="@c.Id">
+                        <div class="ac-form-minorEdit__group">
+                            <p>Скидка в %:</p>
+                            <input type="number" name="Discount" value="@c.Discount">
+                        </div>
+                        <div class="ac-form-minorEdit__group">
+                            <p>S:</p>
+                            <input type="number" name="NumberS" value="@c.NumberS">
+                        </div>
+                        <div class="ac-form-minorEdit__group">
+                            <p>M:</p>
+                            <input type="number" name="NumberM" value="@c.NumberM">
+                        </div>
+                        <div class="ac-form-minorEdit__group">
+                            <p>L:</p>
+                            <input type="number" name="NumberL" value="@c.NumberL">
+                        </div>
+                        <button type="submit" id="minorEditBtn">Сохранить</button>
+                    </form>
+                    <button class="ac-product-edit__button" id="ac-product-edit__button" data-product-id="@c.Id">Редактировать</button>
+                </div>
+            }
+        </div>
+    }
+    
+</div>
+
+
+<div class="popup" id="popup">
+	<div class="popup-container">
+		<div class="popup-header">
+			<div class="popup-header__empty"></div>
+			<p class="popup-headline" id="popup-headline">Создание товара</p>
+			<button class="popup-close__btn" id="popup-close__btn">&#10006</button>
+		</div>
+
+		<div class="popup-content" id="ac-popup-create">
+            <form asp-controller="Admin" asp-action="CreateCloth" method="POST" class="ac-create-form" enctype="multipart/form-data">
+                <div class="ac-form-create__line">
+                    <div class="ac-form-create__group">
+                        <p>Название товара</p>
+                        <input type="text" name="Name" >
+                    </div>
+                </div>
+                <div class="ac-form-create__line ac-form-create__numbers">
+                    <div class="ac-form-create__group">
+                        <p>Цена</p>
+                        <input type="number" step="0.01" name="Price">
+                    </div>
+                    <div class="ac-form-create__group">
+                        <p>Скидка в %</p>
+                        <input type="number" name="Discount">
+                    </div>
+                    <div class="ac-form-create__group">
+                        <p>S</p>
+                        <input type="number" name="NumberS">
+                    </div>
+                    <div class="ac-form-create__group">
+                        <p>M</p>
+                        <input type="number" name="NumberM">
+                    </div>
+                    <div class="ac-form-create__group">
+                        <p>L</p>
+                        <input type="number" name="NumberL">
+                    </div>
+                </div>
+                <div class="ac-form-create__line">
+                    <div class="ac-form-create__group">
+                        <p>Категория</p>
+                        <select name="TypeId">
+                            @foreach (var t in Model.TypesClothes)
+                            {
+                                <option value="@t.Id">@t.Name</option>
+                            }
+                        </select>
+                    </div>
+                </div>                    
+                <div class="ac-form-create__line">
+                    <div class="ac-form-create__group">
+                        <p>Описание товара</p>
+                        <textarea name="Description"></textarea>
+                    </div>
+                </div>                                                  
+                <div class="ac-form-create__line">
+                    <div class="ac-form-create__group">
+                        <p>Изображения товара</p>
+                        <input type="file" name="Files" multiple>
+                    </div>
+                </div>                
+                <div class="ac-form-create__line">
+                    <input type="hidden" name="IsVisible" value="true" id="isVisibleInput">
+                    <input type="checkbox" id="isVisibleCheckbox" checked>
+                    <label>Отоброжать</label>
+                </div>        
+                <div class="ac-form-create__line">
+                    <div class="ac-form-create__group">
+                        <button type="submit">Создать</button>
+                    </div>  
+                </div>                  
+            </form>
+        </div>
+
+
+        <div class="popup-content" id="ac-popup-edit">
+            <form asp-controller="Admin" asp-action="EditCloth" method="POST" class="ac-create-form" enctype="multipart/form-data">
+                <input type="hidden" name="Id" id="edit-id">
+                <div class="ac-form-create__line">
+                    <div class="ac-form-create__group">
+                        <p>Название товара</p>
+                        <input type="text" name="Name" id="edit-name">
+                    </div>
+                </div>
+                <div class="ac-form-create__line ac-form-create__numbers">
+                    <div class="ac-form-create__group">
+                        <p>Цена</p>
+                        <input type="number" step="0.01" name="Price" id="edit-price">
+                    </div>
+                    <div class="ac-form-create__group">
+                        <p>Скидка в %</p>
+                        <input type="number" name="Discount" id="edit-discount">
+                    </div>
+                    <div class="ac-form-create__group">
+                        <p>S</p>
+                        <input type="number" name="NumberS" id="edit-numberS">
+                    </div>
+                    <div class="ac-form-create__group">
+                        <p>M</p>
+                        <input type="number" name="NumberM" id="edit-numberM">
+                    </div>
+                    <div class="ac-form-create__group">
+                        <p>L</p>
+                        <input type="number" name="NumberL" id="edit-numberL">
+                    </div>
+                </div>
+                <div class="ac-form-create__line">
+                    <div class="ac-form-create__group">
+                        <p>Категория</p>
+                        <select name="TypeId" id="edit-types">
+                            @foreach (var t in Model.TypesClothes)
+                            {
+                                <option value="@t.Id">@t.Name</option>
+                            }
+                        </select>
+                    </div>
+                </div>                    
+                <div class="ac-form-create__line">
+                    <div class="ac-form-create__group">
+                        <p>Описание товара</p>
+                        <textarea name="Description"  id="edit-description"></textarea>
+                    </div>
+                </div>
+                <div class="ac-form-edit__img-line" id="ac-form-edit__img-line">
+                    
+                </div>                                                  
+                <div class="ac-form-create__line">
+                    <div class="ac-form-create__group">
+                        <p>Изображения товара</p>
+                        <input type="file" name="Files" multiple>
+                    </div>
+                </div>                
+                <div class="ac-form-create__line">
+                    <input type="hidden" name="IsVisible" value="true" id="edit-isVisibleInput">
+                    <input type="checkbox" id="edit-isVisibleCheckbox" checked>
+                    <label>Отоброжать</label>
+                </div>        
+                <div class="ac-form-create__line">
+                    <div class="ac-form-create__group">
+                        <button type="submit">Сохранить</button>
+                    </div>  
+                </div>                  
+            </form>
+        </div>
+
+        <div class="popup-content" id="ac-popup-createType">
+            <form asp-controller="Admin" asp-action="CreateTypeCloth" method="POST" class="ac-create-form" enctype="multipart/form-data">
+                <div class="ac-form-create__line">
+                    <div class="ac-form-create__group">
+                        <p>Название категории</p>
+                        <input type="text" name="Name">
+                    </div>
+                </div>        
+                <div class="ac-form-create__line">
+                    <div class="ac-form-create__group">
+                        <button type="submit">Создать</button>
+                    </div>  
+                </div>                  
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    var popup = document.querySelector('#popup');
+    var popupName = document.querySelector('#popup-headline');
+    var btnPopupClose = document.querySelector('#popup-close__btn');
+
+    var createButton = document.querySelector('#createButton');
+    var createContent = document.querySelector('#ac-popup-create');
+
+    var createTypeButton = document.querySelector('#createTypeButton');
+    var createTypeContent = document.querySelector('#ac-popup-createType')
+
+    var editContent = document.querySelector('#ac-popup-edit');
+
+    popup.classList.add('hidden');
+    createContent.classList.add('hidden');
+    createTypeContent.classList.add('hidden');
+    editContent.classList.add('hidden');
+
+    //<<Создание товара
+    createButton.onclick = function() {
+        popupName.textContent = "Создание товара";
+        popup.classList.remove('hidden');
+        createContent.classList.remove('hidden');
+    }
+    //>>
+
+    //<<Создание категории
+    createTypeButton.onclick = function() {
+        popupName.textContent = "Создание категории";
+        popup.classList.remove('hidden');
+        createTypeContent.classList.remove('hidden');
+    }
+    //>>
+
+    //<<Редактировние товара
+    var editButtons = document.querySelectorAll('#ac-product-edit__button');
+
+    editButtons.forEach(function(button) {
+        button.addEventListener('click', openEditPopup);
+    });
+    //>>
+
+    //<<Малое редактирование
+    var minorEditButtons = document.querySelectorAll('#minorEditBtn');
+
+    minorEditButtons.forEach(function(button) {
+        button.addEventListener('click', saveMinorEdit);
+    });
+    //>>
+
+    //<<Закрытие popup-окон
+    btnPopupClose.onclick = function() {
+		popup.classList.add('hidden');
+        createContent.classList.add('hidden');
+        editContent.classList.add('hidden');
+        createTypeContent.classList.add('hidden');
+	}
+    //>>
+    
+    //<<Сохранение параметров фильтра
+    var urlString = window.location.href;
+
+    var url = new URL(urlString);
+    var searchParams = url.searchParams;
+
+    var typeId = searchParams.get('typeId');
+    var sortType = searchParams.get('sortType');
+    var showHidden = searchParams.get('showHidden');
+    var name = searchParams.get('name');
+
+    document.addEventListener('DOMContentLoaded', saveFilter);
+    //>>
+
+    //Загрузка товаров
+    var page = 2;
+    var isDownloadable = true;
+
+    if(name != '0')
+    {
+        isDownloadable = false;
+    }
+
+    window.addEventListener('scroll', function() {
+        // Получаем текущую позицию прокрутки страницы
+        var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+        // Получаем высоту видимой части окна браузера
+        var windowHeight = window.innerHeight || document.documentElement.clientHeight;
+
+        // Получаем высоту контента страницы
+        var documentHeight = document.documentElement.scrollHeight;
+
+        // Проверяем, находимся ли мы внизу страницы (допустимый зазор 100 пикселей)
+        if ((scrollTop + windowHeight >= documentHeight - 130) && isDownloadable) {
+            // Выполняем действия загрузки товаров
+            loadMoreProducts();
+        }
+    });
+    //>>
+
+    function loadMoreProducts()
+    {
+        isDownloadable = false;
+        var targetProductBlock = document.querySelector('#target-product');
+
+        console.log("Page:" + page);
+        const url = '/Admin/GetClothesJson?typeId=' + typeId + "&sortType=" + sortType + "&showHidden=" + showHidden + "&page=" + page;
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200)
+            {
+                var response = JSON.parse(xhr.responseText);
+                if (response.isFound)
+                {
+                    var clothes = response.clothes.$values;
+
+                    for(var i = 0; i < clothes.length; i++)
+                    {
+                        cloth = clothes[i];
+
+                        if(cloth && cloth.$ref)
+                        {
+                            for(var j = 0; j < clothes.length; j++)
+                            {
+                                var c = clothes[j];
+
+                                if(c.$id != undefined)
+                                {
+                                    var lol = c.typeCloth.clothes.$values.find(item => item.$id == cloth.$ref);
+
+                                    if(lol != undefined)
+                                    {
+                                        cloth = lol;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        console.log(cloth);
+                        
+                        //Добавление продукта
+                        var newBlock = document.createElement('div');
+                        newBlock.className = 'ac-product';
+
+                        //<<Создание верстки                        
+                        var img = document.createElement('img');
+                        img.className = 'ac-product__img';
+                        img.src = cloth.imagesCloth.$values[0].relativePath;
+
+                        var productInfo = document.createElement('div');
+                        productInfo.className = 'ac-product-info';
+
+                        var nameLink = document.createElement('a');
+                        nameLink.className = 'ac-product__name';
+                        nameLink.href = '/Cloth/GetCloth?id=' + cloth.id;
+                        nameLink.textContent = cloth.name;
+
+                        var price = document.createElement('p');
+                        price.className = 'ac-product__price';
+                        price.textContent = cloth.price + '₽';
+
+                        var sold = document.createElement('div');
+                        sold.className = 'ac-product__sold';
+
+                        var soldText = document.createElement('p');
+                        soldText.textContent = 'Продано: ' + cloth.numberSold + ' ';
+
+                        var soldImg = document.createElement('img');
+                        soldImg.className = 'ac-product__sold-img';
+                        soldImg.src = '/img/info.svg';
+                        soldImg.alt = '';
+
+                        var soldPrice = document.createElement('div');
+                        soldPrice.className = 'ac-product__sold-price';
+
+                        var soldPriceText = document.createElement('p');
+                        soldPriceText.textContent = cloth.priceSold + '₽';
+
+                        var time = document.createElement('p');
+                        time.className = 'ac-product__time';
+                        time.textContent = (new Date(cloth.timeCreation)).toLocaleString('ru-RU');
+
+                        var form = document.createElement('form');
+                        form.className = 'ac-form-minorEdit';
+                        form.id = 'ac-form-minorEdit';
+                        form.setAttribute('action', '/Admin/MinorEditCloth');
+                        form.setAttribute('method', 'post');
+
+                        var idInput = document.createElement('input');
+                        idInput.type = 'hidden';
+                        idInput.name = 'Id';
+                        idInput.value = cloth.id;
+
+                        var groupDiscount = document.createElement('div');
+                        groupDiscount.className = 'ac-form-minorEdit__group';
+
+                        var discountLabel = document.createElement('p');
+                        discountLabel.textContent = 'Скидка в %:';
+
+                        var discountInput = document.createElement('input');
+                        discountInput.type = 'number';
+                        discountInput.name = 'Discount';
+                        discountInput.value = cloth.discount;
+
+                        groupDiscount.appendChild(discountLabel);
+                        groupDiscount.appendChild(discountInput);
+
+                        var groupNumberS = document.createElement('div');
+                        groupNumberS.className = 'ac-form-minorEdit__group';
+
+                        var numberSLabel = document.createElement('p');
+                        numberSLabel.textContent = 'S:';
+
+                        var numberSInput = document.createElement('input');
+                        numberSInput.type = 'number';
+                        numberSInput.name = 'NumberS';
+                        numberSInput.value = cloth.numberS;
+
+                        groupNumberS.appendChild(numberSLabel);
+                        groupNumberS.appendChild(numberSInput);
+
+                        var groupNumberM = document.createElement('div');
+                        groupNumberM.className = 'ac-form-minorEdit__group';
+
+                        var numberMLabel = document.createElement('p');
+                        numberMLabel.textContent = 'M:';
+
+                        var numberMInput = document.createElement('input');
+                        numberMInput.type = 'number';
+                        numberMInput.name = 'NumberM';
+                        numberMInput.value = cloth.numberM;
+
+                        groupNumberM.appendChild(numberMLabel);
+                        groupNumberM.appendChild(numberMInput);
+
+                        var groupNumberL = document.createElement('div');
+                        groupNumberL.className = 'ac-form-minorEdit__group';
+
+                        var numberLLabel = document.createElement('p');
+                        numberLLabel.textContent = 'L:';
+
+                        var numberLInput = document.createElement('input');
+                        numberLInput.type = 'number';
+                        numberLInput.name = 'NumberL';
+                        numberLInput.value = cloth.numberL;
+
+                        groupNumberL.appendChild(numberLLabel);
+                        groupNumberL.appendChild(numberLInput);
+
+                        var submitBtn = document.createElement('button');
+                        submitBtn.type = 'submit';
+                        submitBtn.id = 'minorEditBtn';
+                        submitBtn.textContent = 'Сохранить';
+                        submitBtn.addEventListener('click', saveMinorEdit);
+
+                        var editBtn = document.createElement('button');
+                        editBtn.className = 'ac-product-edit__button';
+                        editBtn.id = 'ac-product-edit__button';
+                        editBtn.setAttribute('data-product-id', cloth.id);
+                        editBtn.textContent = 'Редактировать';
+                        editBtn.addEventListener('click', openEditPopup);
+
+                        // Собираем структуру элементов
+                        soldText.appendChild(soldImg);
+                        sold.appendChild(soldText);
+
+                        soldPrice.appendChild(soldPriceText);
+                        sold.appendChild(soldPrice);
+
+                        productInfo.appendChild(nameLink);
+                        productInfo.appendChild(price);
+                        productInfo.appendChild(sold);
+                        //productInfo.appendChild(soldPrice);
+                        productInfo.appendChild(time);
+
+                        form.appendChild(idInput);
+                        form.appendChild(groupDiscount);
+                        form.appendChild(groupNumberS);
+                        form.appendChild(groupNumberM);
+                        form.appendChild(groupNumberL);
+                        form.appendChild(submitBtn);
+
+                        newBlock.appendChild(img);
+                        newBlock.appendChild(productInfo);
+                        newBlock.appendChild(form);
+                        newBlock.appendChild(editBtn);
+                        //>>
+
+                        targetProductBlock.appendChild(newBlock);
+                    }
+
+                    page = page + 1;
+                    isDownloadable = true;
+                }
+                else
+                {
+                    isDownloadable = false;
+                    console.log("Товары не найденны")
+                }
+            }
+            else
+            {
+                isDownloadable = false;
+            }
+        };
+        xhr.send();
+    }
+
+    function openEditPopup(productId)
+    {
+        var productId = this.getAttribute('data-product-id');
+
+        const url = '/Admin/GetClothJson?id=' + productId;
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+            var response = JSON.parse(xhr.responseText);
+            if (response.isFound) {
+                var cloth = response.cloth;
+
+                document.querySelector("#edit-id").value = cloth.id;
+                document.querySelector("#edit-name").value = cloth.name;
+                document.querySelector("#edit-price").value = cloth.price;
+                document.querySelector("#edit-discount").value = cloth.discount;
+                document.querySelector("#edit-numberS").value = cloth.numberS;
+                document.querySelector("#edit-numberM").value = cloth.numberM;
+                document.querySelector("#edit-numberL").value = cloth.numberL;
+                document.querySelector("#edit-description").value = cloth.description;
+
+                var selectElement = document.querySelector("#edit-types");
+                var optionElements = selectElement.options;
+
+                for (var i = 0; i < optionElements.length; i++) {
+                var option = optionElements[i];
+
+                if (option.value == cloth.typeCloth.id) {
+                    option.selected = true;
+                    break;
+                }
+                }
+
+                var editIsVisibleInput = document.querySelector('#edit-isVisibleInput');
+                var editIsVisibleCheckbox = document.querySelector('#edit-isVisibleCheckbox');
+
+                if (cloth.isVisible) {
+                editIsVisibleInput.value = 'true';
+                editIsVisibleCheckbox.checked = true;
+                } else {
+                editIsVisibleInput.value = 'false';
+                editIsVisibleCheckbox.checked = false;
+                }
+
+                var targetElement = document.querySelector('#ac-form-edit__img-line');
+                while (targetElement.firstChild) {
+                targetElement.removeChild(targetElement.firstChild);
+                }
+
+                imagesCloth = Object.values(cloth.imagesCloth)[1];
+
+                // Проходимся по массиву cloth.imagesCloth;
+                for (var i = 0; i < imagesCloth.length; i++) {
+                var imageCloth = imagesCloth[i];
+
+                // Создаем новый блок HTML
+                var newBlock = document.createElement('div');
+                newBlock.className = 'ac-form-edit__img-group';
+
+                // Создаем новый элемент checkbox
+                var checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.name = 'ImagesClothId';
+                checkbox.id = 'edit-checkbox-img';
+                checkbox.value = imageCloth.id;
+                checkbox.className = 'hidden';
+
+                // Создаем новый элемент img
+                var image = document.createElement('img');
+                image.src = imageCloth.relativePath;
+                image.className = 'ac-form-edit__img';
+                image.id = 'edit-img';
+
+                // Добавляем checkbox и img в новый блок
+                newBlock.appendChild(checkbox);
+                newBlock.appendChild(image);
+
+                // Вставляем новый блок в целевой элемент
+                targetElement.appendChild(newBlock);
+                }
+
+                var imgs = document.querySelectorAll('#edit-img');
+                if (imgs.length > 0) {
+                imgs.forEach((img) => {
+                    img.addEventListener('click', () => {
+                    img.classList.toggle('img-darken');
+
+                    var checkbox = img.closest('div').querySelector('input[type="checkbox"][id="edit-checkbox-img"]');
+                    if (checkbox) {
+                        checkbox.checked = !checkbox.checked;
+                    }
+                    });
+                });
+                }
+
+                popupName.textContent = "Редактирование товара";
+                popup.classList.remove('hidden');
+                editContent.classList.remove('hidden');
+            } else {
+                console.log("Ошибка")
+            }
+            }
+        };
+        xhr.send();
+    }
+
+    function saveMinorEdit(event)
+    {
+        event.preventDefault(); // Отменяем стандартное поведение кнопки
+
+        var form = event.target.closest('#ac-form-minorEdit');
+        var formData = new FormData(form);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open(form.method, form.action, true);
+
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+            // Обработка успешного ответа от сервера
+            console.log(xhr.responseText);
+            } else {
+            // Обработка ошибки
+            console.log('Произошла ошибка при отправке данных');
+            }
+        };
+
+        xhr.onerror = function() {
+            // Обработка ошибки
+            console.log('Произошла ошибка при отправке данных');
+        };
+
+        xhr.send(formData);
+    }
+
+    function saveFilter()
+    {
+        var selectTypeId = document.querySelector('#selectTypeId');
+        var selectSortType = document.querySelector('#selectSortType');
+        var showHiddenInput = document.querySelector('#showHiddenInput');
+        var showHiddenCheckbox = document.querySelector('#showHiddenCheckbox');
+        var searchName = document.querySelector('#searchName');
+
+        selectTypeId.value = typeId;
+        selectSortType.value = sortType;
+
+        if(showHidden == 'true' || showHidden == 'True')
+        {
+            showHiddenInput.value = "true";
+            showHiddenCheckbox.checked = true;
+        }
+        else
+        {
+            showHiddenInput.value = "false";
+            showHiddenCheckbox.checked = false;
+        }
+
+        if(name != "0")
+        {
+            searchName.value = name;
+        }
+    }
+</script>
+
+
+
+<script>
+    //Переключение чекбоксов
+    var showHiddenCheckbox = document.querySelector('#showHiddenCheckbox');
+    var showHiddenInput = document.querySelector('#showHiddenInput');
+
+    var isVisibleInput = document.querySelector('#isVisibleInput');
+    var isVisibleCheckbox = document.querySelector('#isVisibleCheckbox');
+
+    var editIsVisibleInput = document.querySelector('#edit-isVisibleInput');
+    var editIsVisibleCheckbox = document.querySelector('#edit-isVisibleCheckbox');
+
+    showHiddenCheckbox.addEventListener('change', function() {
+        showHiddenInput.value = this.checked ? 'true' : 'false';
+    });
+
+    isVisibleCheckbox.addEventListener('change', function() {
+        isVisibleInput.value = this.checked ? 'true' : 'false';
+    });
+
+    editIsVisibleCheckbox.addEventListener('change', function() {
+        editIsVisibleInput.value = this.checked ? 'true' : 'false';
+    });
+    //>>
+</script>

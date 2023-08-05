@@ -1,0 +1,135 @@
+@media (min-width: 768px) {
+    .ct-form-filter {
+        display: flex;
+        margin-left: auto;
+    }
+    
+    .ct-form-filter img {
+        height: 25px;
+    }
+    
+    .ct-form-filter__select {
+        font-family: 'Roboto Condensed';
+        font-weight: 700;
+        color: #727272;
+        margin-top: auto;
+        border: none;
+        padding-left: 7px;
+        padding-right: 7px;
+    }
+    
+    .ct-product-grid {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    
+    .ct-product {
+        box-sizing: border-box;
+        padding-left: 10px;
+        padding-right: 10px;
+        width: 25%;
+        margin-bottom: 25px;
+    }
+    
+    .ct-product__img {
+        display: block;
+        width: 100%;
+        border-radius: 3%;
+    }
+    
+    .ct-product__link {
+        text-decoration: none;
+    }
+    
+    .ct-product-name {
+        font-family: 'Roboto Condensed';
+        font-weight: 700;
+        font-size: 20px;
+        color: #282828;
+        text-transform: uppercase;
+        text-align: center;
+        padding-top: 15px;
+        padding-bottom: 10px;
+    }
+    
+    .ct-product-price {
+        font-family: 'Roboto Condensed';
+        font-weight: 400;
+        font-size: 20px;
+        color: #282828;
+        text-transform: uppercase;
+        text-align: center;
+    }
+    
+    .ct-product-price-discount {
+        color: #c63e45;
+        text-decoration: line-through;
+    }
+}
+
+@media (max-width: 767px) {
+    .ct-form-filter {
+        display: flex;
+        margin-top: 15px;
+    }
+    
+    .ct-form-filter img {
+        height: 20px;
+    }
+    
+    .ct-form-filter__select {
+        font-family: 'Roboto Condensed';
+        font-weight: 700;
+        color: #727272;
+        margin-top: auto;
+        border: none;
+        padding-left: 7px;
+        padding-right: 7px;
+    }
+    
+    .ct-product-grid {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    
+    .ct-product {
+        box-sizing: border-box;
+        padding-left: 10px;
+        padding-right: 10px;
+        width: 50%;
+        margin-bottom: 25px;
+    }
+    
+    .ct-product__img {
+        display: block;
+        width: 100%;
+        border-radius: 3%;
+    }
+    
+    .ct-product__link {
+        text-decoration: none;
+    }
+    
+    .ct-product-name {
+        font-weight: 700;
+        font-size: 16px;
+        color: #282828;
+        text-transform: uppercase;
+        text-align: center;
+        padding-top: 12px;
+        padding-bottom: 6px;
+    }
+    
+    .ct-product-price {
+        font-weight: 400;
+        font-size: 16px;
+        color: #282828;
+        text-transform: uppercase;
+        text-align: center;
+    }
+    
+    .ct-product-price-discount {
+        color: #c63e45;
+        text-decoration: line-through;
+    }
+}

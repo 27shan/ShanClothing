@@ -1,0 +1,210 @@
+﻿@using ShanClothing.Domain.Entity;
+@using ShanClothing.Domain.Enum;
+@model Order;
+
+<div class="path">
+    <img src="/img/home.svg" class="path-home__ico">
+    <a asp-controller="Home" asp-action="Index" class="path__link">
+        ГЛАВНАЯ
+    </a>
+    <img src="/img/right.svg" class="path-right__ico">
+    <a class="path-end__link">
+        Корзина
+    </a>       
+</div>
+
+<h1>Корзина</h1>
+
+<div class="basket-wrapper">
+	<div class="basket-content">
+		@foreach(var oc in Model.OrderClothes)
+		{
+			<div class="b-product">
+				<a href='@Url.Action("GetCloth", "Cloth", new { @oc.Cloth.Id })' class='b-product__link'>
+					<img class="b-product__img" src='@oc.Cloth.ImagesCloth.FirstOrDefault()?.RelativePath'>
+					<div class="b-product-info">
+						<p class="b-product-name">@oc.Cloth.Name</p>
+						@if(oc.Cloth.Discount > 0)
+						{
+							<p class="b-product-price">@Math.Round((oc.Cloth.Price-oc.Cloth.Price*(oc.Cloth.Discount/100M)), 2)₽ <span class="b-product-price-discount">@Math.Round(oc.Cloth.Price, 2)₽</span></p>
+						}
+						else
+						{
+							<p class="b-product-price">@Math.Round(oc.Cloth.Price,2)₽</p>
+						}
+						<p class="b-product-size">Размер: <span class="b-product-size__value">@oc.Size</span></p>
+						<p class="b-product-number">Количество: <span class="b-product-number__value">@oc.Number</span></p>
+					</div>
+				</a>
+				<div class="b-product-btns">
+					<form method="post">
+						<input type="hidden" name="clothId" value="@oc.ClothId">
+						<input type="hidden" name="size" value="@oc.Size">
+						<button type="submit" formaction="/AppUser/RemoveClothFromBasket" class="b-delete-btn" id="b-delete-btn">&#10006</button>
+					</form>
+
+					<div class="b-product-change-btns">
+						<form method="post">
+							<input type="hidden" name="clothId" value="@oc.ClothId">
+							<input type="hidden" name="size" value="@oc.Size">
+							<input type="hidden" name="number" value="1">
+							<button type="submit" formaction="/AppUser/СhangeNumberClothInBasket" class="b-product-add-btn" id="b-product-add-btn">+</button>
+						</form>
+						<form method="post">
+							<input type="hidden" name="clothId" value="@oc.ClothId">
+							<input type="hidden" name="size" value="@oc.Size">
+							<input type="hidden" name="number" value="-1">
+							<button type="submit" formaction="/AppUser/СhangeNumberClothInBasket" class="b-product-subtract-btn" id="b-product-subtract-btn">-</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		}
+	</div>
+
+
+	<div class="basket-sidebar">
+		<div class="b-sidebar-header">Сумма заказа</div>
+		<div class="b-info">
+			<div class="b-price__label">
+				<p>Общая стоимость:</p>
+				<p>Скидка:</p>
+				<p class="b-priceTotal">Итого:</p>
+			</div>
+			<div class="b-price__value">
+				<p>@Math.Round(Model.Price, 2)₽</p>
+				<p class="b-priceDiscount">-@Math.Round(Model.Discount, 2)₽</p>
+				<p class="b-priceTotal">@Math.Round(Model.PriceTotal, 2)₽</p>
+			</div>
+		</div>
+
+		<button class="b-btn-buy" id="b-btn-buy">Купить</button>
+
+		<div class="b-info-payment">
+			<p class="b-info-payment__text">Мы принимаем карты всех банков</p>
+			<div class="b-info-payment__imgs">
+				<img src="/img/visa.svg">
+				<img src="/img/master.svg">
+				<img src="/img/mir.svg">
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div class="popup" id="popup">
+	<div class="popup-container">
+		<div class="popup-header">
+			<div class="popup-header__empty"></div>
+			<p class="popup-headline">Подтверждение заказа</p>
+			<button class="popup-close__btn" id="popup-close__btn">&#10006</button>
+		</div>
+		<div class="popup-content">
+			<div class="b-popup-user">
+				<p class="b-popup-user__headline">Платежный адрес</p>
+				<p class="b-popup-user__label">Имя: <span class="b-popup-user__value" id="b-popup-user-firstname"></span></p>
+				<p class="b-popup-user__label">Фамилия: <span class="b-popup-user__value" id="b-popup-user-lastname"></span></p>
+				<p class="b-popup-user__label">Email: <span class="b-popup-user__value" id="b-popup-user-email"></span></p>
+				<p class="b-popup-user__label">Номер телефона: <span class="b-popup-user__value" id="b-popup-user-phone"></span></p>
+				<p class="b-popup-user__label">Адрес: <span class="b-popup-user__value" id="b-popup-user-address"></span></p>
+				<p class="b-popup-user__label-end">Почтовый индекс: <span class="b-popup-user__value" id="b-popup-user-postcode"></span></p>
+			</div>
+			<div class="b-popup-payment">
+				<p class="b-popup-paymnet__headline">Оплата и доставка</p>
+				<form asp-controller="Payment" asp-action="Payment" class="b-popup-form" id="b-popup-form">
+					<div class="b-popup-form__group">
+						<p>Способ доставки:</p>
+						<label class="b-popup-form__label">
+							<input type="radio" name="deliveryType" value="@DeliveryType.PickupInStore" checked>
+							самовывоз из магазина
+						</label>
+						<label class="b-popup-form__label">
+							<input type="radio" name="deliveryType" value="@DeliveryType.Post" id="input-post">
+							доставка почтой РФ
+						</label>
+					</div>
+					<div class="b-popup-form__group">
+						<p>Способ оплаты:</p>
+						<label class="b-popup-form__label">
+							<input type="radio" name="paymentType" value="@PaymentType.Card" checked>
+							оплата картой онлайн
+						</label>
+						<label class="b-popup-form__label">
+							<input type="radio" name="paymentType" value="@PaymentType.Ethereum">
+							оплата Sepolia Ethereum
+						</label>
+					</div>
+				</form>
+			</div>
+		</div>
+		<p class="b-popup-amount">Итого: @Math.Round(Model.PriceTotal, 2)₽</p>
+		<div class="b-popup-btns">
+				<a asp-controller="Account" asp-action="Edit" class="b-popup-user__link">Изменить</a>
+				<button type="submit" form="b-popup-form" class="b-popup-confirm__btn">Подтвердить</button>
+		</div>
+	</div>
+</div>
+
+
+
+
+
+<script>
+	const btnBuy = document.querySelector('#b-btn-buy');
+	const popup = document.querySelector('#popup');
+	const btnPopupClose = document.querySelector('#popup-close__btn');
+
+	const firstname = document.querySelector('#b-popup-user-firstname');
+	const lastname = document.querySelector('#b-popup-user-lastname');
+	const email = document.querySelector('#b-popup-user-email');
+	const phone = document.querySelector('#b-popup-user-phone');
+	const address = document.querySelector('#b-popup-user-address');
+	const postcode = document.querySelector('#b-popup-user-postcode');
+
+	var userInfo = null;
+
+	popup.classList.add('hidden');
+
+	btnBuy.onclick = function() {
+		const xhr = new XMLHttpRequest();
+		const url = '@Url.Action("GetAppUserInfo", "AppUser")';
+		xhr.open('GET', url, true);
+
+		xhr.onreadystatechange = function () {
+			if (xhr.readyState === 4 && xhr.status === 200) {
+				var response = JSON.parse(xhr.responseText);
+				if(response.isFound) {
+					userInfo = response.userInfo;
+					console.log(userInfo);
+					firstname.textContent = userInfo.firstName;
+					lastname.textContent = userInfo.lastName;
+					email.textContent = userInfo.email;
+					phone.textContent = userInfo.phoneNumber;
+					address.textContent = userInfo.address;
+					postcode.textContent = userInfo.postcode;
+					popup.classList.remove('hidden');
+				}
+				else {
+					console.log("Ошибка")
+				}
+			}
+		};
+		xhr.send();
+	}
+
+	btnPopupClose.onclick = function() {
+		popup.classList.add('hidden');
+	}
+
+	var inputPost = document.querySelector('#input-post');
+
+	inputPost.onclick = function()
+	{
+		if(userInfo != null && (userInfo.firstName == null || userInfo.lastName == null || userInfo.phoneNumber == null
+			|| userInfo.address == null || userInfo.postcode == null))
+		{
+			window.location.href = '@Url.Action("Edit", "Account")';
+		}
+	}
+</script>
+

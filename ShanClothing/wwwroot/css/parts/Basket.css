@@ -1,0 +1,818 @@
+@media (min-width: 768px) {
+    .basket-wrapper {
+        display: flex;
+    }
+    
+    .basket-content {
+        width: 50%;
+    }
+    
+    .b-product {
+        display: flex;
+        padding: 25px 25px 0px 0px;
+    }
+    
+    .b-product__link {
+        display: flex;
+        text-decoration: none;
+        color: #282828;
+        font-size: 22px;
+    }
+    
+    .b-product__img {
+        width: 25%;
+        border-radius: 3%;
+    }
+    
+    .b-product-info {
+        margin-left: 25px;
+        margin-top: 6px;
+    }
+    
+    .b-product-name {
+        text-transform: uppercase;
+        font-size: 26px;
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+    
+    .b-product-price {
+        margin-bottom: 7px;
+    }
+    
+    .b-product-price-discount {
+        color: #c63e45;
+        text-decoration: line-through;
+    }
+    
+    .b-product-size {
+        margin-bottom: 7px;
+    }
+    
+    .b-product-size__value {
+        text-transform: uppercase;
+    }
+    
+    .b-product-number {
+        display: flex;
+    }
+    
+    .b-product-number__value {
+        margin-left: 5px;
+        padding-left: 15px;
+        padding-right: 15px;
+        border: 1px solid rgba(0,0,0,0.24);
+        border-radius: 50px;
+    }
+    
+    .b-product-btns {
+        display: none;
+    }
+    
+    .b-delete-btn {
+        font-size: 30px;
+        text-decoration: none;
+        color: #282828;
+        margin-bottom: auto;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        border: none;
+        background: none;
+        /*display: none;*/
+    }
+    
+    .b-delete-btn:hover {
+        background-color: #f1f1f1;
+    }
+    
+    .b-product:hover .b-product-btns {
+        display: block;
+    }
+    
+    .b-product-change-btns {
+        display: flex;
+        flex-direction: column;
+        border: 1px solid rgba(0,0,0,0.24);
+        border-radius: 50px;
+    }
+    
+    .b-product-add-btn {
+        font-size: 30px;
+        width: 50px;
+        height: 50px;
+        color: #282828;
+        border-radius: 50%;
+        border: none;
+        background: none;
+    }
+    
+    .b-product-add-btn:hover {
+        background-color: #f1f1f1;
+    }
+    
+    .b-product-subtract-btn {
+        font-size: 30px;
+        width: 50px;
+        height: 50px;
+        color: #282828;
+        border-radius: 50%;
+        border: none;
+        background: none;
+    }
+    
+    .b-product-subtract-btn:hover {
+        background-color: #f1f1f1;
+    }
+    
+    
+    
+    
+    .basket-sidebar {
+        width: 40%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .b-sidebar-header {
+        margin-top: 31px;
+        margin-bottom: 50px;
+        font-size: 36px;
+        font-weight: 700;
+        color: #282828;
+        text-transform: uppercase;
+        text-align: center;
+    }
+    
+    .b-info {
+        font-size: 26px;
+        font-weight: 400;
+        color: #282828;
+        text-transform: uppercase;
+        display: flex;
+        justify-content: center;
+    }
+    
+    .b-price__label p {
+        margin-bottom: 15px;
+    }
+    
+    .b-price__value {
+        margin-left: 25px;
+    }
+    
+    .b-price__value p {
+        text-align: right;
+        margin-bottom: 15px;
+    }
+    
+    .b-priceDiscount {
+        color: #c63e45;
+    }
+    
+    .b-priceTotal {
+        font-weight: 700;
+    }
+    
+    .b-btn-buy {
+        margin-top: 30px;
+        margin-bottom: 30px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 75%;
+    
+        padding-top: 25px;
+        padding-bottom: 25px;
+        border: none;
+        border-radius: 6px;
+    
+        text-align: center;
+        font-family: 'Roboto Condensed';
+        font-weight: 400;
+        font-size: 30px;
+        color: white;
+        background-color: #282828;
+    }
+    
+    .b-btn-buy:hover {
+        background-color: #424242;
+    }
+    
+    .b-btn-buy:active {
+        background-color: #000000;
+    }
+    
+    .b-info-payment {
+        margin-left: 12.5%;
+        margin-top: 15px;
+    }
+    
+    .b-info-payment__text {
+        font-size: 24px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #727272;
+    }
+    
+    .b-info-payment__imgs {
+        display: flex;
+        margin-top: 10px;
+    }
+    
+    .b-info-payment__imgs img {
+        height: 40px;
+        margin-right: 20px;
+    }
+    
+    
+    
+    
+    .popup {
+        display: flex;
+        width:100%;
+        min-height: 100%;
+        max-height: 100%;
+        overflow-y: auto;
+        background-color: rgba(0,0,0,0.8);
+        position:fixed;
+        top:0px;
+        left: 0px;
+        z-index: 1000;
+    }
+    
+    .popup-container {
+        margin: auto;
+        width: 50%;
+        background-color: #fff;
+    
+        border-radius: 15px;
+    }
+    
+    .popup-header {
+        display: flex;
+        width: 100%;
+        box-shadow: 0 -1px #ddd inset;
+    }
+    
+    .popup-header__empty {
+        margin-left: 3px;
+        width: 50px;
+        height: 50px;
+        margin-right: auto;
+    }
+    
+    .popup-headline {
+        text-align: center;
+        text-transform: uppercase;
+        color: #282828;
+        font-size: 26px;
+        font-weight: 700;
+        
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 24px;
+        margin-bottom: 15px;
+    }
+    
+    .popup-close__btn {
+        font-size: 30px;
+        text-decoration: none;
+        color: #282828;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        border: none;
+        background: none;
+    
+        margin-top: auto;
+        margin-bottom: auto;
+        margin-left: auto;
+        margin-right: 7px;
+    }
+    
+    .popup-close__btn:hover {
+        background-color: #f1f1f1;
+    }
+    
+    
+    .popup-content {
+        display: flex;
+        width: 90%;
+        margin-top: 35px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 15px;
+    }
+    
+    .b-popup-user {
+        width: 55%;
+        margin-right: auto;
+        font-size: 22px;
+    }
+    
+    .b-popup-user__headline {
+        font-size: 26px;
+        margin-bottom: 20px;
+        font-weight: 700;
+        text-transform: uppercase;
+        text-align: center;
+    }
+    
+    .b-popup-user__label {
+        margin-bottom: 15px;
+    }
+    
+    .b-popup-user__label-end {
+        margin-bottom: 0px;
+    }
+    
+    .b-popup-user__value {
+        font-weight: 300;
+    }
+    
+    .b-popup-payment {
+        width: 40%;
+        margin-left: auto;
+        font-size: 22px;
+    }
+    
+    .b-popup-paymnet__headline {
+        font-size: 26px;
+        margin-bottom: 20px;
+        font-weight: 700;
+        text-transform: uppercase;
+        text-align: center;
+    }
+    
+    .b-popup-form__group {
+        margin-bottom: 15px;
+    }
+    
+    .b-popup-form__label {
+        display: block;
+        margin-top: 8px;
+    }
+    
+    .b-popup-amount {
+        width: 90%;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: right;
+        font-size: 24px;
+        text-transform: uppercase;
+        font-weight: 700;
+    }
+    
+    .b-popup-btns {
+        font-size: 22px;
+        display: flex;
+        width: 90%;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 20px;
+        margin-bottom: 40px;
+    }
+    
+    .b-popup-user__link {
+        font-weight: 700;
+        padding: 10px 25px 10px 25px;
+        text-decoration: none;
+        color: #282828;
+        border-radius: 6px;
+        border: none;
+    }
+    
+    .b-popup-user__link:hover {
+        background: #f1f1f1;
+    }
+    
+    .b-popup-confirm__btn {
+        margin-left: auto;
+        font-family: 'Roboto Condensed';
+        font-weight: 700;
+        color: white;
+        background: #282828;
+        padding: 10px 25px 10px 25px;
+        border: none;
+        border-radius: 6px;
+    }
+    
+    .b-popup-confirm__btn:hover {
+        background-color: #424242;
+    }
+    
+    .b-popup-confirm__btn:active {
+        background-color: #000000;
+    }
+}
+
+@media (max-width: 767px) {
+    .basket-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    
+    .basket-content {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+    
+    .b-product {
+        display: flex;
+        padding-top: 25px;
+    }
+    
+    .b-product__link {
+        display: flex;
+        text-decoration: none;
+        color: #282828;
+        font-size: 18px;
+    }
+    
+    .b-product__img {
+        width: 30%;
+        border-radius: 3%;
+    }
+    
+    .b-product-info {
+        margin-left: 15px;
+        margin-bottom: 6px;
+    }
+    
+    .b-product-name {
+        text-transform: uppercase;
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 12px;
+    }
+    
+    .b-product-price {
+        margin-bottom: 4px;
+    }
+    
+    .b-product-price-discount {
+        color: #c63e45;
+        text-decoration: line-through;
+    }
+    
+    .b-product-size {
+        margin-bottom: 4px;
+    }
+    
+    .b-product-size__value {
+        text-transform: uppercase;
+    }
+    
+    .b-product-number {
+        display: flex;
+    }
+    
+    .b-product-number__value {
+        margin-left: 4px;
+        padding-left: 12px;
+        padding-right: 12px;
+        border: 1px solid rgba(0,0,0,0.24);
+        border-radius: 50px;
+    }
+    
+    .b-product-btns {
+        
+    }
+    
+    .b-delete-btn {
+        font-size: 26px;
+        text-decoration: none;
+        color: #282828;
+        margin-bottom: auto;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: none;
+        background: none;
+    }
+    
+    .b-delete-btn:hover {
+        background-color: #f1f1f1;
+    }
+    
+    .b-product:hover .b-product-btns {
+        display: block;
+    }
+    
+    .b-product-change-btns {
+        display: flex;
+        flex-direction: column;
+        border: 1px solid rgba(0,0,0,0.24);
+        border-radius: 50px;
+    }
+    
+    .b-product-add-btn {
+        font-size: 26px;
+        width: 40px;
+        height: 40px;
+        color: #282828;
+        border-radius: 50%;
+        border: none;
+        background: none;
+    }
+    
+    .b-product-add-btn:hover {
+        background-color: #f1f1f1;
+    }
+    
+    .b-product-subtract-btn {
+        font-size: 26px;
+        width: 40px;
+        height: 40px;
+        color: #282828;
+        border-radius: 50%;
+        border: none;
+        background: none;
+    }
+    
+    .b-product-subtract-btn:hover {
+        background-color: #f1f1f1;
+    }
+    
+    
+    
+    
+    .basket-sidebar {
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .b-sidebar-header {
+        margin-top: 25px;
+        margin-bottom: 40px;
+        font-size: 32px;
+        font-weight: 700;
+        color: #282828;
+        text-transform: uppercase;
+        text-align: center;
+    }
+    
+    .b-info {
+        font-size: 22px;
+        font-weight: 400;
+        color: #282828;
+        text-transform: uppercase;
+        display: flex;
+        justify-content: center;
+    }
+    
+    .b-price__label p {
+        margin-bottom: 12px;
+    }
+    
+    .b-price__value {
+        margin-left: 20px;
+    }
+    
+    .b-price__value p {
+        text-align: right;
+        margin-bottom: 12px;
+    }
+    
+    .b-priceDiscount {
+        color: #c63e45;
+    }
+    
+    .b-priceTotal {
+        font-weight: 700;
+    }
+    
+    .b-btn-buy {
+        margin-top: 20px;
+        margin-bottom: 15px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 100%;
+
+        padding-top: 20px;
+        padding-bottom: 20px;
+        border: none;
+        border-radius: 6px;
+    
+        text-align: center;
+        font-family: 'Roboto Condensed';
+        font-weight: 700;
+        font-size: 26px;
+
+        color: white;
+        background-color: #282828;
+    }
+    
+    .b-btn-buy:hover {
+        background-color: #424242;
+    }
+    
+    .b-btn-buy:active {
+        background-color: #000000;
+    }
+    
+    .b-info-payment {
+        
+    }
+    
+    .b-info-payment__text {
+        font-size: 20px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #727272;
+    }
+    
+    .b-info-payment__imgs {
+        display: flex;
+        margin-top: 10px;
+    }
+    
+    .b-info-payment__imgs img {
+        height: 30px;
+        margin-right: 15px;
+    }
+    
+    
+    
+    
+    .popup {
+        display: flex;
+        width:100%;
+        min-height: 100%;
+        max-height: 100%;
+        overflow-y: auto;
+        background-color: rgba(0,0,0,0.8);
+        position:fixed;
+        top:0px;
+        left: 0px;
+        z-index: 1000;
+    }
+    
+    .popup-container {
+        margin: auto;
+        width: 90%;
+        background-color: #fff;
+    
+        border-radius: 15px;
+    }
+    
+    .popup-header {
+        display: flex;
+        width: 100%;
+        box-shadow: 0 -1px #ddd inset;
+    }
+    
+    .popup-header__empty {
+        margin-left: 3px;
+        width: 50px;
+        height: 50px;
+        margin-right: auto;
+    }
+    
+    .popup-headline {
+        text-align: center;
+        text-transform: uppercase;
+        color: #282828;
+        font-size: 26px;
+        font-weight: 700;
+        
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 24px;
+        margin-bottom: 15px;
+    }
+    
+    .popup-close__btn {
+        font-size: 30px;
+        text-decoration: none;
+        color: #282828;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        border: none;
+        background: none;
+    
+        margin-top: auto;
+        margin-bottom: auto;
+        margin-left: auto;
+        margin-right: 7px;
+    }
+    
+    .popup-close__btn:hover {
+        background-color: #f1f1f1;
+    }
+    
+    
+    .popup-content {
+        display: flex;
+        flex-wrap: wrap;
+        width: 90%;
+        margin-top: 25px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 15px;
+    }
+    
+    .b-popup-user {
+        width: 100%;
+        margin-bottom: 20px;
+        font-size: 18px;
+    }
+    
+    .b-popup-user__headline {
+        font-size: 22px;
+        margin-bottom: 20px;
+        font-weight: 700;
+        text-transform: uppercase;
+        text-align: center;
+    }
+    
+    .b-popup-user__label {
+        margin-bottom: 7px;
+    }
+    
+    .b-popup-user__label-end {
+        margin-bottom: 0px;
+    }
+    
+    .b-popup-user__value {
+        font-weight: 300;
+    }
+    
+    .b-popup-payment {
+        width: 100%;
+        font-size: 18px;
+    }
+    
+    .b-popup-paymnet__headline {
+        font-size: 22px;
+        margin-bottom: 20px;
+        font-weight: 700;
+        text-transform: uppercase;
+        text-align: center;
+    }
+    
+    .b-popup-form__group {
+        margin-bottom: 7px;
+    }
+    
+    .b-popup-form__label {
+        display: block;
+        margin-top: 4px;
+    }
+    
+    .b-popup-amount {
+        width: 90%;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: right;
+        font-size: 18px;
+        text-transform: uppercase;
+        font-weight: 700;
+    }
+    
+    .b-popup-btns {
+        font-size: 18px;
+        display: flex;
+        width: 90%;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 20px;
+        margin-bottom: 40px;
+    }
+    
+    .b-popup-user__link {
+        font-weight: 700;
+        padding: 7px 20px 7px 20px;
+        text-decoration: none;
+        color: #282828;
+        border-radius: 6px;
+        border: none;
+    }
+    
+    .b-popup-user__link:hover {
+        background: #f1f1f1;
+    }
+    
+    .b-popup-confirm__btn {
+        margin-left: auto;
+        font-family: 'Roboto Condensed';
+        font-weight: 700;
+        color: white;
+        background: #282828;
+        padding: 7px 20px 7px 20px;
+        border: none;
+        border-radius: 6px;
+    }
+    
+    .b-popup-confirm__btn:hover {
+        background-color: #424242;
+    }
+    
+    .b-popup-confirm__btn:active {
+        background-color: #000000;
+    }
+}

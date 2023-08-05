@@ -1,0 +1,173 @@
+﻿@using ShanClothing.Domain.Entity;
+@using ShanClothing.Domain.Enum;
+@model Order;
+
+<div class="path">
+    <img src="/img/home.svg" class="path-home__ico">
+    <a asp-controller="Home" asp-action="Index" class="path__link">
+        ГЛАВНАЯ
+    </a>
+    <img src="/img/right.svg" class="path-right__ico">
+    <a asp-controller="Account" asp-action="Profile" class="path__link">
+        МОЙ АККАУНТ
+    </a>
+    <img src="/img/right.svg" class="path-right__ico">
+    <a asp-controller="Account" asp-action="Orders" class="path__link">
+        ЗАКАЗЫ
+    </a>
+    <img src="/img/right.svg" class="path-right__ico"> 
+    <a class="path-end__link">
+        @Model.Id
+    </a>         
+</div>
+
+<h1>
+    @Model.Id
+</h1>
+
+<div class="profile-wrapper">
+    <div class="profile-sidebar">
+        <div class="profile-menu-container">
+            <div class="profile-name">
+                <a asp-controller="Account" asp-action="Profile" class="profile-name__link">@User.Identity.Name</a>
+            </div>
+            <ul class="profile-menu">
+                <li class="profile-menu__li-active">
+                    <a asp-controller="Account" asp-action="Orders" class="profile-menu__link-active">
+                        Заказы
+                    </a>
+                </li>
+                <li class="profile-menu__li">
+                    <a asp-controller="Account" asp-action="Edit" class="profile-menu__link">
+                        Настройки
+                    </a>
+                </li>
+
+                @if(User.IsInRole("Admin"))
+                {
+                    <li class="profile-menu__li">
+                        <a href='@Url.Action("Users", "Admin", new { isModerator = false, email = "0" })' class="profile-menu__link">
+                            Пользователи
+                        </a>
+                    </li>
+                }
+                @if(User.IsInRole("Moderator"))
+                {
+                    <li class="profile-menu__li">
+                        <a href='@Url.Action("Orders", "Admin",
+                            new { sortType = SortType.DateDescending, statusOrder = StatusOrder.Paid, userId = Guid.Empty, orderId = Guid.Empty })' class="profile-menu__link">
+                            Заказы
+                        </a>
+                    </li>
+                    <li class="profile-menu__li">
+                        <a href='@Url.Action("Clothes", "Admin",
+                            new { typeId = 0, sortType = SortType.DateDescending, showHidden = true, name = "0" })' class="profile-menu__link">
+                            Товары
+                        </a>
+                    </li>
+
+                }
+                <li class="profile-menu__li">
+                    <a asp-controller="Account" asp-action="Logout" class="profile-menu__link">
+                        Выйти
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="content-profile">
+        @foreach (var oc in @Model.OrderClothes)
+        {
+            <div class="o-product">
+				<a href='@Url.Action("GetCloth", "Cloth", new { @oc.Cloth.Id })' class='o-product__link'>
+					<img class="o-product__img" src='@oc.Cloth.ImagesCloth.FirstOrDefault()?.RelativePath'>
+					<div class="o-product-info">
+						<p class="o-product-name">@oc.Cloth.Name</p>
+						@if(oc.Cloth.Discount > 0)
+						{
+							<p class="o-product-price">@Math.Round((oc.Cloth.Price-oc.Cloth.Price*(oc.Cloth.Discount/100M)), 2)₽ <span class="b-product-price-discount">@Math.Round(oc.Cloth.Price, 2)₽</span></p>
+						}
+						else
+						{
+							<p class="o-product-price">@Math.Round(oc.Cloth.Price,2)₽</p>
+						}
+						<p class="o-product-size">Размер: <span class="o-product-size__value">@oc.Size</span></p>
+						<p class="o-product-number">Количество: <span class="o-product-number__value">@oc.Number</span></p>
+					</div>
+				</a>
+				<div class="o-product-btns">
+					
+				</div>
+			</div>
+        }
+
+        <div class="o-info">
+            <div class="o-info-container">
+                @if(Model.Status == StatusOrder.Paid)
+                {
+                    <h2 class="o-info__headline">Заказ принят</h2>
+                    if(Model.DeliveryType == DeliveryType.Post)
+                    {
+                        <p>Ожидайте отправки заказа.</p>
+                        <p>Письмо с трекером, для отслеживания заказа, придет на почту: <span>@Model.Email</span></p>
+                    }
+                    else if(Model.DeliveryType == DeliveryType.PickupInStore)
+                    {
+                        <p>Уведомление о готовности к выдаче заказа придет на почту: <span>@Model.Email</span></p>
+                    }
+                }
+                else if(Model.Status == StatusOrder.Sent)
+                {
+                    <h2 class="o-info__headline">Заказ отправлен</h2>
+                    if(Model.DeliveryType == DeliveryType.Post)
+                    {
+                        <p>Трекер для отслеживания заказа: <span>@Model.Tracker</span></p>
+                    }
+                    else if(Model.DeliveryType == DeliveryType.PickupInStore)
+                    {
+                        <p>Заказ готов к получению.</p>
+                    }
+                }
+            </div>
+            <div class="o-info-container">
+                @if(Model.DeliveryType == DeliveryType.Post)
+                {
+                    <h2 class="o-info__headline">Доставка почтой</h2>
+                    <p>Имя: <span>@Model.FirstName</span></p>
+                    <p>Фамилия: <span>@Model.LastName</span></p>
+                    <p>Email: <span>@Model.Email</span></p>
+                    <p>Номер телефона: <span>@Model.PhoneNumber</span></p>
+                    <p>Адрес: <span>@Model.Address</span></p>
+                    <p>Почтовый индекс: <span>@Model.Postcode</span></p>
+                }
+                else if(Model.DeliveryType == DeliveryType.PickupInStore)
+                {
+                    <h2 class="o-info__headline">Самовывоз</h2>
+                    <p>Email: <span>@Model.Email</span></p>
+                }
+            </div>
+            <div class="o-info-container">
+                @{
+                    var payment = Model.Payments.FirstOrDefault(p => p.TimePayment != null && p.Amount == Model.PriceTotal);
+
+                    if(payment != null)
+                    {
+                        if(payment.PaymentType == PaymentType.Card)
+                        {
+                            <h2 class="o-info__headline"><img src="/img/card.svg">Карта</h2>
+                            <p>Итого: <span>@payment.Amount₽</span></p>
+                            <p>Время оплаты: <span>@payment.TimePayment</span></p>
+                        }
+                        else if(payment.PaymentType == PaymentType.Ethereum)
+                        {
+                            <h2 class="o-info__headline eth"><img src="/img/ethereum.svg">Ethereum</h2>
+                            <p>Итого: <span>@payment.AmountWei WEI</span></p>
+                            <p>Время оплаты: <span>@payment.TimePayment</span></p>
+                        }
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>

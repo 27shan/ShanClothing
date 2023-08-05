@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Views\TypeCloth\**" />
+    <Compile Remove="wwwroot\Images\**" />
+    <Content Remove="Views\TypeCloth\**" />
+    <Content Remove="wwwroot\Images\**" />
+    <EmbeddedResource Remove="Views\TypeCloth\**" />
+    <EmbeddedResource Remove="wwwroot\Images\**" />
+    <None Remove="Views\TypeCloth\**" />
+    <None Remove="wwwroot\Images\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.15" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.15" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.15" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.15">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.15" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ShanClothing.DAL\ShanClothing.DAL.csproj" />
+    <ProjectReference Include="..\ShanClothing.Domain\ShanClothing.Domain.csproj" />
+    <ProjectReference Include="..\ShanClothing.Service\ShanClothing.Service.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\ImagesCloth\" />
+  </ItemGroup>
+
+</Project>

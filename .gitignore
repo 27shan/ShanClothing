@@ -1,0 +1,10 @@
+**/appsettings.json
+**/package.json
+**/package-lock.json
+
+.vs/
+.vscode/
+
+**/obj/
+**/bin/
+**/node_modules/

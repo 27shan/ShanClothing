@@ -1,0 +1,74 @@
+﻿@using ShanClothing.Domain.ViewModels;
+@using ShanClothing.Domain.Enum;
+@model ProfileViewModel
+
+<div class="path">
+    <img src="/img/home.svg" class="path-home__ico">
+    <a asp-controller="Home" asp-action="Index" class="path__link">
+        ГЛАВНАЯ
+    </a>
+    <img src="/img/right.svg" class="path-right__ico">
+    <a class="path-end__link">
+        МОЙ АККАУНТ
+    </a>       
+</div>
+
+<h1>
+    МОЙ АККАУНТ
+</h1>
+
+<div class="profile-wrapper">
+    <div class="profile-sidebar">
+        <div class="profile-menu-container">
+            <div class="profile-name">
+                <a asp-controller="Account" asp-action="Profile" class="profile-name__link">@User.Identity.Name</a>
+            </div>
+            <ul class="profile-menu">
+                <li class="profile-menu__li">
+                    <a asp-controller="Account" asp-action="Orders" class="profile-menu__link">
+                        Заказы
+                    </a>
+                </li>
+                <li class="profile-menu__li">
+                    <a asp-controller="Account" asp-action="Edit" class="profile-menu__link">
+                        Настройки
+                    </a>
+                </li>
+
+                @if(User.IsInRole("Admin"))
+                {
+                    <li class="profile-menu__li">
+                        <a href='@Url.Action("Users", "Admin", new { isModerator = false, email = "0" })' class="profile-menu__link">
+                            Пользователи
+                        </a>
+                    </li>
+                }
+                @if(User.IsInRole("Moderator"))
+                {
+                    <li class="profile-menu__li">
+                        <a href='@Url.Action("Orders", "Admin",
+                            new { sortType = SortType.DateDescending, statusOrder = StatusOrder.Paid, userId = Guid.Empty, orderId = Guid.Empty })' class="profile-menu__link">
+                            Заказы
+                        </a>
+                    </li>
+                    <li class="profile-menu__li">
+                        <a href='@Url.Action("Clothes", "Admin",
+                            new { typeId = 0, sortType = SortType.DateDescending, showHidden = true, name = "0" })' class="profile-menu__link">
+                            Товары
+                        </a>
+                    </li>
+
+                }
+                <li class="profile-menu__li">
+                    <a asp-controller="Account" asp-action="Logout" class="profile-menu__link">
+                        Выйти
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="content-profile">
+        
+    </div>
+</div>

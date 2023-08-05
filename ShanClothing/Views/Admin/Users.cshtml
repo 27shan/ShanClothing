@@ -1,0 +1,253 @@
+﻿@using ShanClothing.Domain.Entity;
+@using ShanClothing.Domain.ViewModels;
+@using ShanClothing.Domain.Enum;
+@model List<AppUser>;
+
+<div class="path">
+    <img src="/img/home.svg" class="path-home__ico">
+    <a asp-controller="Home" asp-action="Index" class="path__link">
+        ГЛАВНАЯ
+    </a>
+    <img src="/img/right.svg" class="path-right__ico">
+    <a asp-controller="Account" asp-action="Profile" class="path__link">
+        Админ
+    </a>
+    <img src="/img/right.svg" class="path-right__ico">
+    <a class="path-end__link">
+        Пользователи
+    </a>         
+</div>
+
+<div class="ac-menu">
+    <form asp-controller="Admin" asp-action="Users" class="ac-form-filter" method="get">
+        <select name="isModerator" id="selectRoleUser" class="ac-form-filter__select">
+            <option value="False">Пользователи</option>
+			<option value="True">Модераторы</option>
+        </select>
+        <input type="hidden" name="email" value="0">
+        <button type="submit">Применить</button>
+    </form>
+    <form asp-controller="Admin" asp-action="Users" class="ao-form-search" method="get">
+        <input type="hidden" name="isModerator" value="false">
+        <input type="search" id="searchUserEmail" name="email" placeholder="Email пользователя">
+        <button type="submit">
+            <img src="/img/loupe.svg" class="loupe">
+        </button>
+    </form>
+</div>
+
+<div class="ao-order-container">
+    @if(!Model.Any())
+    {
+        <p class="ac-order-error">Пользователи не найденны</p>
+    }
+    else
+    {
+        <div class="au-user-grid" id="target-users">
+            @foreach (var u in Model)
+            {
+                <div class="au-user">
+                    <img class="au-user__img" src="/img/account_out.svg">
+                    <div class="au-user-info">
+                        <p class="au-user__id">@u.Id</p>
+                        <p class="au-user__email">@u.Email</p>
+                        <a href='@Url.Action("Orders", "Admin",
+                            new { sortType = SortType.DateDescending, statusOrder = StatusOrder.Paid, userId = u.Id, orderId = 0 })' class="au-user__orders">Заказы</a>
+                    </div>
+
+                    <form asp-controller="Admin" asp-action="ChangeUserRole" class="au-form-changeRole" id="au-form-changeRole" method="post">
+                        <input type="hidden" name="userId" value="@u.Id">
+                        <select name="roleName" class="au-form-changeRole__select">
+                            @if(!u.IsModerator)
+                            {
+                                <option value="User" selected>Пользователь</option>
+                                <option value="Moderator">Модератор</option>
+                            }
+                            else
+                            {
+                                <option value="User">Пользователь</option>
+                                <option value="Moderator" selected>Модератор</option>
+                            }
+                        </select>
+                        <button type="submit">Сохранить</button>
+                    </form>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<script>
+    //<<Сохранение параметров фильтра
+    var urlString = window.location.href;
+
+    var url = new URL(urlString);
+    var searchParams = url.searchParams;
+
+    var isModerator = searchParams.get('isModerator');
+    var email = searchParams.get('email');
+
+    document.addEventListener('DOMContentLoaded', saveFilter)
+    //>>
+
+    //Загрузка пользователей
+    var page = 2;
+    var isDownloadable = true;
+
+    if(email != '0')
+    {
+        isDownloadable = false;
+    }
+
+    window.addEventListener('scroll', function() {
+        // Получаем текущую позицию прокрутки страницы
+        var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+        // Получаем высоту видимой части окна браузера
+        var windowHeight = window.innerHeight || document.documentElement.clientHeight;
+
+        // Получаем высоту контента страницы
+        var documentHeight = document.documentElement.scrollHeight;
+
+        // Проверяем, находимся ли мы внизу страницы (допустимый зазор 100 пикселей)
+        if ((scrollTop + windowHeight >= documentHeight - 130) && isDownloadable) {
+            // Выполняем действия загрузки товаров
+            loadMoreUsers();
+        }
+    });
+    //>>
+
+    function loadMoreUsers()
+    {
+        isDownloadable = false;
+        var targetUsersBlock = document.querySelector('#target-users');
+
+        console.log("Page:" + page);
+        const url = '/Admin/GetUsersJson?isModerator=' + isModerator + "&page=" + page;
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200)
+            {
+                var response = JSON.parse(xhr.responseText);
+
+                if (response.isFound)
+                {
+                    users = response.users.$values;
+                    
+                    for(var i = 0; i < users.length; i++)
+                    {
+                        var user = users[i];
+                        
+                        //Добавление пользователй
+                        var newBlock = document.createElement('div');
+                        newBlock.className = 'au-user';
+
+                        // Создаем img элемент с классом 'au-user__img' и src атрибутом
+                        var img = document.createElement('img');
+                        img.className = 'au-user__img';
+                        img.src = '/img/account_out.svg';
+
+                        // Создаем div элемент с классом 'au-user-info'
+                        var userInfoDiv = document.createElement('div');
+                        userInfoDiv.className = 'au-user-info';
+
+                        // Создаем элементы для отображения Id и Email
+                        var userIdP = document.createElement('p');
+                        userIdP.className = 'au-user__id';
+                        userIdP.textContent = user.id;
+
+                        var userEmailP = document.createElement('p');
+                        userEmailP.className = 'au-user__email';
+                        userEmailP.textContent = user.email;
+
+                        // Создаем ссылку для отображения заказов
+                        var ordersLink = document.createElement('a');
+                        ordersLink.href = "/Admin/Orders?sortType=@SortType.DateAscending&statusOrder=@StatusOrder.Paid&userId=" + user.id + "&orderId=0"
+                        ordersLink.className = 'au-user__orders';
+                        ordersLink.textContent = 'Заказы';
+
+                        // Создаем форму для изменения роли
+                        var changeRoleForm = document.createElement('form');
+                        changeRoleForm.className = 'au-form-changeRole';
+                        changeRoleForm.id = 'au-form-changeRole';
+                        changeRoleForm.method = 'post';
+                        changeRoleForm.action = '@Url.Action("ChangeUserRole", "Admin")'; // Замените на актуальный Url
+
+                        // Создаем скрытое поле для передачи userId
+                        var userIdInput = document.createElement('input');
+                        userIdInput.type = 'hidden';
+                        userIdInput.name = 'userId';
+                        userIdInput.value = user.id;
+
+                        // Создаем select элемент с классом 'au-form-changeRole__select'
+                        var roleSelect = document.createElement('select');
+                        roleSelect.className = 'au-form-changeRole__select';
+                        roleSelect.name = 'roleName';
+
+                        // Создаем option элементы для выбора роли
+                        var optionUser = document.createElement('option');
+                        optionUser.value = 'User';
+                        optionUser.textContent = 'Пользователь';
+                        optionUser.selected = !user.isModerator;
+
+                        var optionModerator = document.createElement('option');
+                        optionModerator.value = 'Moderator';
+                        optionModerator.textContent = 'Модератор';
+                        optionModerator.selected = user.isModerator
+
+                        // Добавляем option элементы в select
+                        roleSelect.appendChild(optionUser);
+                        roleSelect.appendChild(optionModerator);
+
+                        // Создаем кнопку submit для отправки формы
+                        var saveButton = document.createElement('button');
+                        saveButton.type = 'submit';
+                        saveButton.textContent = 'Сохранить';
+
+                        // Добавляем элементы в соответствующие контейнеры
+                        userInfoDiv.appendChild(userIdP);
+                        userInfoDiv.appendChild(userEmailP);
+                        userInfoDiv.appendChild(ordersLink);
+
+                        changeRoleForm.appendChild(userIdInput);
+                        changeRoleForm.appendChild(roleSelect);
+                        changeRoleForm.appendChild(saveButton);
+
+                        newBlock.appendChild(img);
+                        newBlock.appendChild(userInfoDiv);
+                        newBlock.appendChild(changeRoleForm);
+
+                        targetUsersBlock.appendChild(newBlock);
+                    }
+                    
+                    page = page + 1;
+                    isDownloadable = true;
+                }
+                else
+                {
+                    isDownloadable = false;
+                    console.log("Пользователи не найденны")
+                }
+            }
+            else
+            {
+                isDownloadable = false;
+            }
+        };
+        xhr.send();
+    }
+
+    function saveFilter() 
+    {
+        document.querySelector('#selectRoleUser').value = isModerator;
+
+        if(email != '0')
+        {
+            document.querySelector('#searchUserEmail').value = email;
+        }
+    }
+</script>
+
+

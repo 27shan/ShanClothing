@@ -1,0 +1,205 @@
+@media (min-width: 768px) {
+    .navbar {
+        display: flex;
+        height: 100%;
+        width: 94%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .cart__ico {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .account__ico {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .hamb__ico {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .logo {
+        margin: auto;
+    }
+    
+    .logo__link {
+        text-decoration: none;
+        font-family: 'Roboto Condensed';
+        font-weight: 700;
+        font-size: 32px;
+        color: #282828;
+    }
+    
+    .hamb {
+        /*padding-left: 50px;*/
+        padding-right: 100px;
+        margin-top: auto;
+        margin-bottom: auto;
+    }
+    
+    .user {
+        padding-left: 26px;
+        /*padding-right: 50px;*/
+        margin-top: auto;
+        margin-bottom: auto;
+        text-decoration: none;
+    }
+    
+    .cart__link {
+        text-decoration: none;
+    }
+    
+    .account__ico {
+        text-decoration: none;
+    }
+    
+    .menu-spawn {
+        position: absolute;
+        left: 0;
+        top: 100%;
+        padding: 0;
+        background-color: white;
+        padding-left: 20px;
+        padding-right: 20px;
+        column-count: 2;
+        display: none;
+    }
+    
+    .menu-spawn__item {
+        padding-left: 30px;
+        padding-right: 30px;
+        padding-top: 15px;
+        padding-bottom: 15px;
+        height: 30px;
+        line-height: 30px;
+        list-style: none;
+        position: relative;
+        margin: 0;
+    }
+    
+    .menu-spawn__link {
+        font-family: 'Roboto Condensed';
+        font-size: 16px;
+        font-weight: 700;
+        color: #282828;
+        text-decoration: none;
+        text-transform: uppercase;
+        /*padding: 5px 10px 5px 10px;*/
+    }
+    
+    .menu:hover .menu-spawn {
+        display: block;
+    }
+}
+
+@media (max-width: 767px) {
+    .navbar {
+        display: flex;
+        height: 100%;
+        width: 94%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .cart__ico {
+        width: 100%;
+    }
+    
+    .account__ico {
+        width: 100%;
+    }
+    
+    .hamb__link {
+        text-decoration: none;
+        display: block;
+        width: 25px;
+        height: 25px;
+    }
+
+    .hamb__ico {
+        width: 100%;
+    }
+    
+    .logo {
+        margin: auto;
+    }
+    
+    .logo__link {
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 28px;
+        color: #282828;
+    }
+    
+    .hamb {
+        padding-left: 0px;
+        padding-right: 55px;
+        margin-top: auto;
+        margin-bottom: auto;
+    }
+    
+    .user {
+        display: flex;
+        margin-top: auto;
+        margin-bottom: auto;
+        text-decoration: none;
+        padding-bottom: 4px;
+    }
+    
+    .cart__link {
+        text-decoration: none;
+        display: block;
+        width: 40px;
+        height: 40px;
+    }
+
+    .account__link {
+        text-decoration: none;
+        display: block;
+        width: 40px;
+        height: 40px;
+    }
+    
+
+
+
+    .menu-spawn {
+        position: absolute;
+        left: 0;
+        top: 100%;
+        padding: 0;
+        background-color: white;
+        padding-left: 20px;
+        padding-right: 20px;
+        column-count: 1;
+        display: none;
+        width: 100%;
+    }
+    
+    .menu-spawn__item {
+        padding-left: 30px;
+        padding-right: 30px;
+        padding-top: 15px;
+        padding-bottom: 15px;
+        height: 30px;
+        line-height: 30px;
+        list-style: none;
+        position: relative;
+    }
+    
+    .menu-spawn__link {
+        font-size: 16px;
+        font-weight: 700;
+        color: #282828;
+        text-decoration: none;
+        text-transform: uppercase;
+    }
+    
+    .menu:hover .menu-spawn {
+        display: block;
+    }
+}

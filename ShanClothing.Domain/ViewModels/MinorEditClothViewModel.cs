@@ -1,0 +1,21 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ShanClothing.Domain.ViewModels
+{
+    public class MinorEditClothViewModel
+    {
+        public int Id { get; set; }
+
+        public int Discount { get; set; }
+
+        public int NumberS { get; set; }
+
+        public int NumberM { get; set; }
+
+        public int NumberL { get; set; }
+    }
+}

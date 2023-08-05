@@ -1,0 +1,95 @@
+﻿@using ShanClothing.Service.Interfaces;
+@using ShanClothing.Service.Implementations;
+@using ShanClothing.Domain.Entity;
+@using ShanClothing.Domain.Enum;
+@inject ITypeClothService _typeClothService;
+<!DOCTYPE html>
+<html lang="rus">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ShanClothing</title>
+
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+</head>
+<body>
+    <header>      
+        <nav class="navbar">
+            <div id="hamb" class="hamb">
+                <a class="hamb__link">
+                    <img src="/img/hamb.svg" class="hamb__ico">
+                </a>
+            </div>           
+            <ul id="menu-spawn" class="menu-spawn">
+            @{
+                var response = await _typeClothService.GetAll();
+
+                if(response.StatusCode == StatusCode.OK)
+                {
+                    foreach(var type in response.Data)
+                    {
+                        <li class="menu-spawn__item">
+                                <a href='@Url.Action("Category", "Cloth", new { typeId = type.Id, sortType = SortType.PopularDescending })' class="menu-spawn__link">
+                                @type.Name
+                            </a>
+                        </li>
+                    }
+                }
+            }
+            </ul>
+
+            <div class="logo">
+                <a class="logo__link" asp-area="" asp-controller="Home" asp-action="Index">
+                    <p>SHAN CLOTHING</p>
+                </a>
+            </div>                 
+
+
+            <div class="user">
+                <a asp-controller="Account" asp-action="Basket" class="cart__link">
+                    <img class="cart__ico" src="/img/cart.svg">
+                </a>
+
+                @if(User.Identity.IsAuthenticated)
+                {
+                    <a asp-controller="Account" asp-action="Profile" class="account__link">
+                        <img class="account__ico" src="/img/account_in.svg">
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="Account" asp-action="Login" class="account__link">
+                        <img class="account__ico" src="/img/account_out.svg">
+                    </a>                    
+                }
+            </div>
+
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="main">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer>
+        <div class="footer-container">
+            <p>© 2023 - Shan Clothing</p>
+            <div class="footer-links">
+                <a href=""><img src="/img/headhunter.svg" alt=""></a>
+                <a href=""><img src="/img/github.svg" alt=""></a>
+                <a href=""><img src="/img/telegram.svg" alt=""></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/js/menuSpawn.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

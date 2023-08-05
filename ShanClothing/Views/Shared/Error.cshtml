@@ -1,0 +1,21 @@
+﻿@model string
+@{
+    ViewData["Title"] = "Error";
+}
+
+<div class="path">
+    <img src="/img/home.svg" class="path-home__ico">
+    <a asp-controller="Home" asp-action="Index" class="path__link">
+        ГЛАВНАЯ
+    </a>
+    <img src="/img/right.svg" class="path-right__ico">
+    <a class="path-end__link">
+        Ошибка
+    </a>       
+</div>
+
+<h1>
+    Ошибка
+</h1>
+
+<p class="error-message">@Model</p>

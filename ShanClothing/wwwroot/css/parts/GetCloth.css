@@ -1,0 +1,301 @@
+@media (min-width: 768px) {
+    .cloth-wrapper {
+        display: flex;
+    }
+    
+    .cloth-container-imgs {
+        width: 45%;
+        display: flex;
+        margin-left: auto;
+    }
+    
+    .cloth-content {
+        width: 40%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .cloth__imgs {
+        width: 80%;
+    }
+    
+    .cloth-controller__imgs {
+        width: 20%;
+        width: 20%;
+        display: grid;
+        align-content: center;
+        justify-items: center;
+    }
+    
+    .cloth__img {
+        width: 100%;
+        border-radius: 3%;
+    }
+    
+    .cloth-controller__img {
+        width: 70%;
+        border-radius: 6%;
+        margin-top: 7px;
+        margin-bottom: 7px;
+    }
+    
+    .currentImgContr {
+        border: 3px solid #727272;
+        /*filter: brightness(0.5);*/
+    }
+    
+    
+    
+    
+    .cloth-name {
+        margin-top: 25px;
+    }
+    
+    .cloth-price {
+        font-family: 'Roboto Condensed';
+        font-weight: 400;
+        font-size: 36px;
+        color: #282828;
+        text-align: center;
+        padding-bottom: 50px;
+    }
+    
+    .cloth-price-discount {
+        color: #c63e45;
+        text-decoration: line-through;
+    }
+    
+    .size-group {
+        position: relative;
+        width: 70%;
+        margin-left: auto;
+        margin-right: auto;
+        border-top: 2px solid #727272;
+    }
+    
+    .size-current {
+        width: 100%;
+        padding-top: 20px;
+    
+        text-align: center;
+        font-family: 'Roboto Condensed';
+        font-weight: 700;
+        font-size: 24px;
+        text-transform: uppercase;
+        color: #727272;
+        cursor: pointer;
+    }
+    
+    .size-menu {
+        position: absolute;
+        width: 100%;
+        top: 0px;
+        background-color: white;
+        border-bottom: 2px solid #727272;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        cursor: pointer;
+    }
+    
+    .size-menu li {
+        text-align: center;
+        font-family: 'Roboto Condensed';
+        font-weight: 700;
+        font-size: 24px;
+        text-transform: uppercase;
+        color: #727272;
+    
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+    
+    .btn-add {
+        margin-top: 40px;
+        margin-bottom: 30px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 50%;
+    
+        padding-top: 15px;
+        padding-bottom: 15px;
+        border: none;
+        border-radius: 6px;
+    
+        text-align: center;
+        font-family: 'Roboto Condensed';
+        font-weight: 400;
+        font-size: 30px;
+        color: white;
+        background-color: #282828;
+    }
+    
+    .btn-add:hover {
+        background-color: #424242;
+    }
+    
+    .btn-add:active {
+        background-color: #000000;
+    }
+    
+    .cloth-description {
+        text-align: center;
+        font-size: 22px;
+        font-weight: 700;
+        color: #727272;
+        line-height: 1.1;
+    }
+}
+
+@media (max-width: 767px) {
+    .cloth-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+        width: 90%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .cloth-container-imgs {
+        width: 100%;
+        display: flex;
+        margin-left: auto;
+    }
+    
+    .cloth-content {
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .cloth__imgs {
+        width: 80%;
+    }
+    
+    .cloth-controller__imgs {
+        width: 20%;
+        width: 20%;
+        display: grid;
+        align-content: center;
+        justify-items: center;
+    }
+    
+    .cloth__img {
+        width: 100%;
+        border-radius: 3%;
+    }
+    
+    .cloth-controller__img {
+        width: 70%;
+        border-radius: 6%;
+        margin-top: 7px;
+        margin-bottom: 7px;
+    }
+    
+    .currentImgContr {
+        border: 3px solid #727272;
+        /*filter: brightness(0.5);*/
+    }
+    
+    
+    
+    
+    .cloth-name {
+        margin-top: 25px;
+    }
+    
+    .cloth-price {
+        font-family: 'Roboto Condensed';
+        font-weight: 400;
+        font-size: 36px;
+        color: #282828;
+        text-align: center;
+        padding-bottom: 50px;
+    }
+    
+    .cloth-price-discount {
+        color: #c63e45;
+        text-decoration: line-through;
+    }
+    
+    .size-group {
+        position: relative;
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        border-top: 2px solid #727272;
+    }
+    
+    .size-current {
+        width: 100%;
+        padding-top: 20px;
+    
+        text-align: center;
+        font-family: 'Roboto Condensed';
+        font-weight: 700;
+        font-size: 24px;
+        text-transform: uppercase;
+        color: #727272;
+        cursor: pointer;
+    }
+    
+    .size-menu {
+        position: absolute;
+        width: 100%;
+        top: 0px;
+        background-color: white;
+        border-bottom: 2px solid #727272;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        cursor: pointer;
+    }
+    
+    .size-menu li {
+        text-align: center;
+        font-family: 'Roboto Condensed';
+        font-weight: 700;
+        font-size: 24px;
+        text-transform: uppercase;
+        color: #727272;
+    
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+    
+    .btn-add {
+        margin-top: 40px;
+        margin-bottom: 30px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 100%;
+    
+        padding-top: 15px;
+        padding-bottom: 15px;
+        border: none;
+        border-radius: 6px;
+    
+        text-align: center;
+        font-family: 'Roboto Condensed';
+        font-weight: 400;
+        font-size: 30px;
+        color: white;
+        background-color: #282828;
+    }
+    
+    .btn-add:hover {
+        background-color: #424242;
+    }
+    
+    .btn-add:active {
+        background-color: #000000;
+    }
+    
+    .cloth-description {
+        text-align: center;
+        font-size: 22px;
+        font-weight: 700;
+        color: #727272;
+        line-height: 1.1;
+    }
+}

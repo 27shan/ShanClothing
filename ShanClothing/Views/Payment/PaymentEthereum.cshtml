@@ -1,0 +1,239 @@
+﻿@using ShanClothing.Domain.Entity;
+@model Payment;
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="~/css/parts/Login.css"/>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Roboto+Condensed:wght@400;700&family=Roboto+Slab:wght@400;500;700&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="main">
+        <div class="container">
+            <h1 class="logo">
+                SHAN CLOTHING
+            </h1>
+
+            <h2 class="logo-eth">
+				<img src="/img/ethereum.svg" class="logo-eth__img">
+                Ethereum Sepolia
+            </h2>
+
+            <div class="form">
+				<div class="form__line">
+                    <div class="form__group">
+                        <p class="form__amount">
+                            @(Model.AmountWei) WEI
+                        </p>
+                    </div>
+                </div>
+
+				<div class="form__line">
+                    <div class="form__group">
+                        <p class="form__message">
+                            Оплата производится в тестовой сети Ethereum Sepolia через кошелек MetaMask.
+							Пожалуйста, убедитесь, что в вашем кошельке выбрана тестовая сеть Sepolia и дождитесь подтверждения транзакции.
+                        </p>
+                    </div>
+                </div>
+
+
+                <div class="form__keys">
+                    <a asp-controller="Home" asp-action="Index" class="form__link">Назад</a>
+                    <button id="p-pay__btn" class="form__btn">Оплатить</button>
+                </div>
+
+            </div>  
+        </div>
+    </div>
+</body>
+</html>
+
+<script src="https://cdn.jsdelivr.net/npm/web3@1.6.0/dist/web3.min.js"></script>
+
+<script type="text/javascript">
+    const btnPay = document.querySelector('#p-pay__btn');
+    btnPay.onclick = async function() {
+        try {
+            // Проверка подключения к MetaMask
+            if (typeof window.ethereum === 'undefined') {
+                throw new Error('MetaMask не найден');
+            }
+
+            //Подключение к MetaMask
+            await window.ethereum.enable();
+
+            // Проверка выбранной сети в MetaMask
+            const networkId = await window.ethereum.request({ method: 'net_version' });
+			if (networkId !== '11155111') {
+                throw new Error('Выбранная сеть не соответствует Sepolia Ethereum');
+            }
+
+            // Получение аккаунта MetaMask
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            const account = accounts[0];
+
+            // Адрес смарт-контракта
+			const contractAddress = '0xe4f506d6c53b032edeab33db7d26e1807903afbd';
+
+            // ABI смарт-контракта
+			const contractAbi = [
+				{
+					"inputs": [],
+					"stateMutability": "nonpayable",
+					"type": "constructor"
+				},
+				{
+					"inputs": [],
+					"name": "getBalance",
+					"outputs": [
+						{
+							"internalType": "uint256",
+							"name": "",
+							"type": "uint256"
+						}
+					],
+					"stateMutability": "view",
+					"type": "function"
+				},
+				{
+					"inputs": [
+						{
+							"internalType": "string",
+							"name": "orderId",
+							"type": "string"
+						}
+					],
+					"name": "getPayment",
+					"outputs": [
+						{
+							"components": [
+								{
+									"internalType": "uint256",
+									"name": "amount",
+									"type": "uint256"
+								},
+								{
+									"internalType": "uint256",
+									"name": "timestamp",
+									"type": "uint256"
+								},
+								{
+									"internalType": "address",
+									"name": "from",
+									"type": "address"
+								}
+							],
+							"internalType": "struct PaymentShanClothing.Payment",
+							"name": "",
+							"type": "tuple"
+						}
+					],
+					"stateMutability": "view",
+					"type": "function"
+				},
+				{
+					"inputs": [
+						{
+							"internalType": "string",
+							"name": "orderId",
+							"type": "string"
+						}
+					],
+					"name": "pay",
+					"outputs": [],
+					"stateMutability": "payable",
+					"type": "function"
+				},
+				{
+					"inputs": [
+						{
+							"internalType": "address payable",
+							"name": "_to",
+							"type": "address"
+						},
+						{
+							"internalType": "uint256",
+							"name": "amount",
+							"type": "uint256"
+						}
+					],
+					"name": "withdraw",
+					"outputs": [],
+					"stateMutability": "payable",
+					"type": "function"
+				},
+				{
+					"inputs": [
+						{
+							"internalType": "address payable",
+							"name": "_to",
+							"type": "address"
+						}
+					],
+					"name": "withdrawAll",
+					"outputs": [],
+					"stateMutability": "payable",
+					"type": "function"
+				}
+			];
+
+            // Создание экземпляра смарт-контракта
+            const web3 = new Web3(window.ethereum);
+            const contract = new web3.eth.Contract(contractAbi, contractAddress);
+
+            // Получение значения Payment.AmountWei в виде BigNumber
+            const amountWei = web3.utils.toBN('@Model.AmountWei');
+
+            // Вызов функции pay с передачей параметров
+            const orderId = '@Model.OrderId.ToString()';
+
+            const functionData = contract.methods.pay(orderId).encodeABI();
+
+            // Создание транзакции
+            const transactionParameters = {
+                from: account,
+                to: contractAddress,
+                gas: 3000000, // Газовый лимит
+                data: functionData,
+                value: amountWei, // Указание количества wei для перевода
+            };
+
+            // Подписание и отправка транзакции через MetaMask
+            web3.eth.sendTransaction(transactionParameters)
+            .on('transactionHash', (hash) => {
+                console.log('Транзакция отправлена. Хэш транзакции:', hash);
+            })
+           .on('confirmation', (confirmationNumber, receipt) => {
+				console.log('Получено подтверждение: ', confirmationNumber);
+				console.log('Статус: ', receipt.status);
+				// Проверка статуса выполнения транзакции
+				if (confirmationNumber === 1 && receipt.status === true) {
+					console.log('Транзакция успешно подтверждена 2 раза и выполнена успешно.');
+					window.location.href = '@Model.ReturnUrl';
+				}
+			})
+            .on('error', (error) => {
+                console.log('Ошибка при отправке транзакции:', error);
+            })
+			.on('disconnect', () => {
+				console.log('Подключение к MetaMask разорвано.');
+				// Выполнить действия при разрыве подключения к MetaMask
+			});
+        }
+        catch (error)
+        {
+            console.log('Ошибка:', error);
+        }
+    }
+</script>

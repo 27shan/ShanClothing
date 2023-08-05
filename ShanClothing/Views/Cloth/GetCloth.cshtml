@@ -1,0 +1,208 @@
+﻿@using ShanClothing.Domain.Entity;
+@using ShanClothing.Domain.Enum;
+@model Cloth;
+
+<div class="path">
+    <img src="/img/home.svg" class="path-home__ico">
+    <a asp-controller="Home" asp-action="Index" class="path__link">
+        ГЛАВНАЯ
+    </a>
+    <img src="/img/right.svg" class="path-right__ico">
+    <a href='@Url.Action("Category", "Cloth", new { typeId = Model.TypeCloth.Id, sortType = SortType.PopularDescending })' class="path__link">
+        @Model.TypeCloth.Name
+    </a>
+    <img src="/img/right.svg" class="path-right__ico">
+    <a class="path-end__link">
+        @Model.Name
+    </a>       
+</div>
+
+
+<div class="cloth-wrapper">
+    <div class="cloth-container-imgs" id="cloth-container-imgs">
+        @{
+            var imagesCloth = Model.ImagesCloth.ToList();
+            <div class="cloth__imgs" id="cloth__imgs">
+                @for(int i = 0; i < imagesCloth.Count; i++)
+                {
+                    <img src="@imagesCloth[i].RelativePath" class="cloth__img hidden" id="cloth__img" index="@i">
+                }
+            </div>
+            <div class="cloth-controller__imgs">
+                @for(int i = 0; i < imagesCloth.Count; i++)
+                {
+                    <img src="@imagesCloth[i].RelativePath" class="cloth-controller__img" id="cloth-controller__img" index="@i">
+                }
+            </div>
+        }
+    </div>
+
+    <div class="cloth-content">
+        <h1 class="cloth-name">@Model.Name</h1>
+        @if(Model.Discount > 0)
+        {
+            <p class="cloth-price">@Math.Round((Model.Price - Model.Price * (Model.Discount/100M)), 2)₽ <span class="cloth-price-discount">@Math.Round(Model.Price, 2)₽</span></p>
+        }
+        else 
+        {
+            <p class="cloth-price">@Math.Round(Model.Price, 2)₽</p>
+        }
+        <div class="size-group">
+            <p class="size-current" id="size-current">Выберите размер</p>
+            <ul class="size-menu hidden" id="size-menu">
+                @if(Model.NumberS > 0)
+                {
+                    <li class="size-menu__item">s</li>
+                }
+                @if(Model.NumberM > 0)
+                {
+                    <li class="size-menu__item">m</li>
+                }
+                @if(Model.NumberL > 0)
+                {
+                    <li class="size-menu__item">l</li>
+                }
+            </ul>
+        </div>
+
+        <button class="btn-add" id="btn-add">В корзину</button>
+        <p class="cloth-description">@Model.Description</p>
+    </div>
+</div>
+
+
+
+<script>
+    const imgs = document.querySelectorAll('#cloth__img');
+    const contrImgs = document.querySelectorAll('#cloth-controller__img');
+    var currentImg = imgs[0];
+    var currentImgContr = contrImgs[0];
+
+    currentImg.classList.remove('hidden');
+    currentImgContr.classList.add('currentImgContr');
+
+    contrImgs.forEach(function(image) {
+        image.addEventListener('click', showImgСlick);
+    });
+
+    imgs.forEach(function(image) {
+        showImgSwipe(image);
+    });
+
+    function showImgSwipe(element)
+    {
+        let startX;
+        let startY;
+        let distX;
+        let distY;
+
+        element.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        });
+
+        element.addEventListener('touchmove', (e) => {
+            distX = startX - e.touches[0].clientX;
+            distY = startY - e.touches[0].clientY;
+        });
+
+        element.addEventListener('touchend', (e) => {
+            // Проверка на дистанцию свайпа, чтобы считать его значимым
+            if (Math.abs(distX) > 50 && Math.abs(distY) < 50)
+            {
+                var index = element.getAttribute('index');
+                index = parseInt(index, 10);
+                if (distX > 0)
+                {
+                    index += 1;
+                    if(index >= imgs.length) index = 0;
+                }
+                else
+                {
+                    index -= 1;
+                    if(index < 0) index = imgs.length - 1;
+                }
+
+                var img = document.querySelector(`#cloth__img[index="${index}"]`);
+                var imgContr = document.querySelector(`#cloth-controller__img[index="${index}"]`);
+
+                currentImgContr.classList.remove('currentImgContr');
+                imgContr.classList.add('currentImgContr');
+                currentImgContr = imgContr;
+
+                currentImg.classList.add('hidden');
+                img.classList.remove('hidden');
+                currentImg = img;
+            }
+        });
+    }
+
+    function showImgСlick()
+    {
+        var index = this.getAttribute('index');
+        
+        var img = document.querySelector(`#cloth__img[index="${index}"]`);
+
+        currentImgContr.classList.remove('currentImgContr');
+        this.classList.add('currentImgContr');
+        currentImgContr = this;
+
+        currentImg.classList.add('hidden');
+        img.classList.remove('hidden');
+        currentImg = img;
+    }
+</script>
+
+<script>
+    const sizeCurrent = document.querySelector('#size-current');
+    const sizeMenu = document.querySelector('#size-menu');
+    const sizeMenuItems = Array.from(sizeMenu.children);
+
+    sizeCurrent.onclick = function() {
+        sizeMenu.classList.remove('hidden');
+    }
+
+    sizeMenuItems.forEach( function(item) {
+        item.onclick = function() {
+            sizeCurrent.textContent = item.textContent;
+            sizeCurrent.style.color = '#727272';
+            sizeMenu.classList.add('hidden');
+        }
+    })
+</script>
+
+<script>
+    const btnBuy = document.querySelector('#btn-add');
+
+    btnBuy.addEventListener('click', function () {
+        const size = document.querySelector('#size-current').textContent;
+        console.log(size);
+        if (size == 's' || size == 'm' || size == 'l') {
+            const xhr = new XMLHttpRequest();
+            const url = '@Url.Action("AddClothInBasket", "AppUser")';
+            const formData = new FormData();
+            const clothId = @Model.Id; 
+
+            formData.append('clothId', clothId);
+            formData.append('size', size.toString());
+
+            xhr.open('POST', url, true);
+            xhr.send(formData);
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var isAdded = JSON.parse(xhr.responseText);
+                    if(isAdded) {
+                        console.log("Товар добавлен в корзину");
+                    }
+                    else {
+                        console.log("Ошибка")
+                    }
+                }
+            };
+        }
+        else {
+            document.querySelector('#size-current').style.color = '#c63e45';
+        }
+    });
+</script>

@@ -1,0 +1,206 @@
+@using System;
+@using ShanClothing.Domain.Entity;
+@using ShanClothing.Domain.Enum;
+@model List<Cloth>;
+
+<div class="path">
+    <img src="/img/home.svg" class="path-home__ico">
+    <a asp-controller="Home" asp-action="Index" class="path__link">
+        ГЛАВНАЯ
+    </a>
+    <img src="/img/right.svg" class="path-right__ico">
+    <a class="path-end__link">
+        @Model[0].TypeCloth.Name
+    </a>
+    <form asp-controller="Cloth" asp-action="Category" class="ct-form-filter" method="get">
+        <img src="/img/filter.svg">
+        <input type="hidden" name="typeId" value="@Model[0].TypeCloth.Id">
+        <select name="sortType" id="selectSortType" class="ct-form-filter__select">
+            <option value="@SortType.PriceAscending">По возрастанию цены</option>
+            <option value="@SortType.PriceDescending">По убыванию цены</option>
+            <option value="@SortType.DateDescending">Сначала новые</option>
+            <option value="@SortType.DateAscending">Сначала старые</option>
+            <option value="@SortType.PopularDescending">По популярности</option>
+            <option value="@SortType.DiscountDescending">По скидке</option>
+        </select>
+    </form>       
+</div>
+
+<h1>
+    @Model[0].TypeCloth.Name
+</h1>
+
+<div class="ct-product-grid" id="target-products">
+    @foreach(var cloth in Model)
+    {
+        <div class="ct-product">
+            <a href='@Url.Action("GetCloth", "Cloth", new { id = cloth.Id })' class="ct-product__link">
+                <img src="@cloth.ImagesCloth.FirstOrDefault()?.RelativePath" class="ct-product__img">
+                <p class="ct-product-name">@cloth.Name</p>
+                @if(cloth.Discount > 0 )
+                {
+                    <p class="ct-product-price">@Math.Round((cloth.Price-cloth.Price*(cloth.Discount/100M)), 2)₽ <span class="ct-product-price-discount">@Math.Round(cloth.Price, 2)₽</span></p>
+                }
+                else 
+                {
+                    <p class="ct-product-price">@Math.Round(cloth.Price, 2)₽</p>
+                }
+            </a>
+        </div>
+    }
+</div>
+
+
+<script>
+    //<<Сортировка товаров
+    var selectSortType = document.getElementById('selectSortType');
+
+    selectSortType.addEventListener('change', function()
+    {
+        var form = this.closest('form');
+        form.submit();
+    });
+    //>>
+
+    //<<Сохранение параметров фильтра
+    var urlString = window.location.href;
+
+    var url = new URL(urlString);
+    var searchParams = url.searchParams;
+
+    var typeId = searchParams.get('typeId');
+    var sortType = searchParams.get('sortType');
+
+    document.addEventListener('DOMContentLoaded', saveFilter);
+    //>>
+
+    //Загрузка товаров
+    var page = 2;
+    var isDownloadable = true;
+
+    window.addEventListener('scroll', function() {
+        // Получаем текущую позицию прокрутки страницы
+        var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+        // Получаем высоту видимой части окна браузера
+        var windowHeight = window.innerHeight || document.documentElement.clientHeight;
+
+        // Получаем высоту контента страницы
+        var documentHeight = document.documentElement.scrollHeight;
+
+        // Проверяем, находимся ли мы внизу страницы (допустимый зазор 100 пикселей)
+        if ((scrollTop + windowHeight >= documentHeight - 130) && isDownloadable) {
+            // Выполняем действия загрузки товаров
+            loadMoreProducts();
+        }
+    });
+    //>>
+
+    function loadMoreProducts()
+    {
+        isDownloadable = false;
+        var targetProductBlock = document.querySelector('#target-products');
+
+        console.log("Page:" + page);
+        const url = '/Cloth/GetClothesJson?typeId=' + typeId + "&sortType=" + sortType + "&page=" + page;
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200)
+            {
+                var response = JSON.parse(xhr.responseText);
+
+                if (response.isFound)
+                {
+                    var clothes = response.clothes.$values;
+
+                    for(var i = 0; i < clothes.length; i++)
+                    {
+                        cloth = clothes[i];
+
+                        if(cloth && cloth.$ref)
+                        {
+                            for(var j = 0; j < clothes.length; j++)
+                            {
+                                var c = clothes[j];
+
+                                if(c.$id != undefined)
+                                {
+                                    var lol = c.typeCloth.clothes.$values.find(item => item.$id == cloth.$ref);
+
+                                    if(lol != undefined)
+                                    {
+                                        cloth = lol;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        console.log(cloth);
+                        
+                        //Добавление продукта
+                        var newBlock = document.createElement('div');
+                        newBlock.className = 'ct-product';
+
+                        var linkElement = document.createElement('a');
+                        linkElement.href = '/Cloth/GetCloth?id=' + cloth.id;
+                        linkElement.className = 'ct-product__link';
+
+                        var imgElement = document.createElement('img');
+                        imgElement.src = cloth.imagesCloth.$values.length > 0 ? cloth.imagesCloth.$values[0].relativePath : '/img/default-image.jpg';
+                        imgElement.className = 'ct-product__img';
+
+                        var nameElement = document.createElement('p');
+                        nameElement.className = 'ct-product-name';
+                        nameElement.textContent = cloth.name;
+
+                        var priceElement = document.createElement('p');
+                        priceElement.className = 'ct-product-price';
+                        if (cloth.discount > 0) {
+                            var discountedPrice = Math.round((cloth.price - cloth.price * (cloth.discount / 100)), 2);
+                            var originalPrice = Math.round(cloth.price, 2);
+                            priceElement.textContent = discountedPrice + '₽ ';
+                            var discountSpan = document.createElement('span');
+                            discountSpan.className = 'ct-product-price-discount';
+                            discountSpan.textContent = originalPrice + '₽';
+                            priceElement.appendChild(discountSpan);
+                        } else {
+                            priceElement.textContent = Math.round(cloth.price, 2) + '₽';
+                        }
+
+                        // Добавляем созданные элементы в соответствующие родительские элементы
+                        linkElement.appendChild(imgElement);
+                        linkElement.appendChild(nameElement);
+                        linkElement.appendChild(priceElement);
+                        newBlock.appendChild(linkElement);
+
+                        targetProductBlock.appendChild(newBlock);
+                    }
+
+                    page = page + 1;
+                    isDownloadable = true;
+                }
+                else
+                {
+                    isDownloadable = false;
+                    console.log("Товары не найденны");
+                }
+            }
+            else
+            {
+                isDownloadable = false;
+            }
+        };
+        xhr.send();
+    }
+
+
+    function saveFilter()
+    {
+        var selectSortType = document.querySelector('#selectSortType');
+
+        selectSortType.value = sortType;
+    }
+</script>
