@@ -23,9 +23,12 @@ namespace ShanClothing.DAL
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IConfiguration configuration) : base(options)
         {
             _configuration = configuration;
-            //Database.EnsureDeleted();
-            //Database.EnsureCreated();
-        }
+
+			if (!Database.CanConnect())
+			{
+				Database.EnsureCreated();
+			}
+		}
 
         public DbSet<Cloth> Clothes { get; set; }
 
