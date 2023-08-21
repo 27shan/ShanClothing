@@ -19,13 +19,15 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+
+
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 	options.UseSqlServer(connection));
 
 
 
-//<<Строка подключения Identity
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme);
 
 builder.Services.AddIdentity<AppUser, IdentityRole<Guid>>(options =>
@@ -47,14 +49,13 @@ builder.Services.Configure<CookieAuthenticationOptions>(options =>
     options.LogoutPath = "/Account/Logout";
     options.AccessDeniedPath = "/Account/AccessDenied";
 });
-//>>
 
 builder.Services.AddScoped<IUserStore<AppUser>, UserStore<AppUser, IdentityRole<Guid>, ApplicationDbContext, Guid>>();
 builder.Services.AddScoped<UserManager<AppUser>>();
 builder.Services.AddScoped<SignInManager<AppUser>>();
 
 
-//Подключение электронной почты
+
 var emailSettings = builder.Configuration.GetSection("EmailSettings");
 
 builder.Services.AddScoped<SmtpClient>(provider =>
@@ -68,15 +69,12 @@ builder.Services.AddScoped<SmtpClient>(provider =>
 });
 
 
-//Настройка сериализации в Json
+
 builder.Services.AddControllers().AddJsonOptions(options => 
 {
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
     
 });
-
-
-//
 
 
 builder.Services.InitializeRepositories();
@@ -106,99 +104,3 @@ app.MapControllerRoute(
 
 app.Run();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-//Новая строка подключения Identity
-/*
-builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = false)
-    .AddEntityFrameworkStores<ApplicationDbContext>();
-
-builder.Services.Configure<IdentityOptions>(options =>
-{
-    // Password settings.
-    options.Password.RequireDigit = true;
-    options.Password.RequireLowercase = true;
-    options.Password.RequireNonAlphanumeric = true;
-    options.Password.RequireUppercase = true;
-    options.Password.RequiredLength = 6;
-    options.Password.RequiredUniqueChars = 1;
-
-    // Lockout settings.
-    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-    options.Lockout.MaxFailedAccessAttempts = 5;
-    options.Lockout.AllowedForNewUsers = true;
-
-    // User settings.
-    options.User.AllowedUserNameCharacters =
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-    options.User.RequireUniqueEmail = false;
-});
-
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    // Cookie settings
-    options.Cookie.HttpOnly = true;
-    options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
-
-    options.LoginPath = "/Identity/Account/Login";
-    options.AccessDeniedPath = "/Identity/Account/AccessDenied";
-    options.SlidingExpiration = true;
-});*/
-//Новая строка подключения Identity
-
-
-
-//<<Строка подключения Identity
-/*
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme);
-
-builder.Services.AddIdentity<AppUser, IdentityRole<Guid>>(options =>
-{
-    options.SignIn.RequireConfirmedAccount = false;
-    options.Password.RequiredLength = 6;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequireLowercase = false;
-    options.Password.RequireUppercase = false;
-    options.Password.RequireDigit = false;
-})
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
-
-builder.Services.Configure<CookieAuthenticationOptions>(options =>
-{
-    options.LoginPath = "/Account/Login";
-    options.LogoutPath = "/Account/Logout";
-    options.AccessDeniedPath = "/Account/AccessDenied";
-});*/
-//Строка подключения Identity>>
-
-//builder.Services.AddScoped<IUserStore<AppUser>, UserStore<AppUser, IdentityRole<Guid>, ApplicationDbContext, Guid>>();
-//builder.Services.AddScoped<UserManager<AppUser>>();
-//builder.Services.AddScoped<SignInManager<AppUser>>();
-
-
-
-
-
-
-
-
-//Старая строка подключения Identity
-/*builder.Services.AddIdentity<AppUser, IdentityRole<Guid>>()
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddDefaultTokenProviders();
-
-builder.Services.AddScoped<IUserStore<AppUser>, UserStore<AppUser, IdentityRole<Guid>, ApplicationDbContext, Guid>>();
-builder.Services.AddScoped<UserManager<AppUser>>();
-builder.Services.AddScoped<SignInManager<AppUser>>();*/

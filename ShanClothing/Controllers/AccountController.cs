@@ -85,8 +85,6 @@ namespace ShanClothing.Controllers
             return View("Error", $"{response.Description}");
         }
 
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> Logout()

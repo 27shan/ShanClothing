@@ -88,8 +88,11 @@
         // Получаем высоту контента страницы
         var documentHeight = document.documentElement.scrollHeight;
 
+        var screenWidth = window.innerWidth;
+        var gapThreshold = screenWidth > 768 ? 130 : 100;
+
         // Проверяем, находимся ли мы внизу страницы (допустимый зазор 100 пикселей)
-        if ((scrollTop + windowHeight >= documentHeight - 130) && isDownloadable) {
+        if ((scrollTop + windowHeight >= documentHeight - gapThreshold) && isDownloadable) {
             // Выполняем действия загрузки товаров
             loadMoreProducts();
         }
